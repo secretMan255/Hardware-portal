@@ -47,4 +47,13 @@ export class CallApi {
       throw err;
     }
   }
+
+  public static async uploadImage(FormData: any) {
+    try {
+      console.log("data: ", FormData);
+      return await AxiosClient.getInstance().post("/upload/image", FormData);
+    } catch (err) {
+      throw err;
+    }
+  }
 }

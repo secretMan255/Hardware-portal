@@ -10,7 +10,7 @@
                     <v-divider></v-divider>
                <v-list density="compact" nav >
                     <v-list-item
-                         :prepend-icon="getIcon('ALL')"
+                         :prepend-icon="'mdi-alpha-a-circle'"
                          :key="0"
                          :title="'ALL'"
                          :class="{ 'active-item': activeItem === 0 }"
@@ -21,8 +21,7 @@
                     <template v-for="(product, index) in products" :key="`group=${product.id}`">
                          <v-list-group
                               v-if="product.children.length > 0"
-                              :prepend-icon="getIcon(product.name)"
-                              @click="setActiveItem(product.id)" 
+                              :prepend-icon="product.icon"
                               :class="{ 'active-item': activeItem === 0 }"
                               :title="product.name"
                          >
@@ -30,7 +29,6 @@
                                    <v-list-item 
                                         v-bind="props" 
                                         :title="product.name" 
-                                        @click="setActiveItem(product.id)" 
                                         :class="{ 'active-item': activeItem === product.id }">
                                    </v-list-item>
                               </template>
@@ -67,7 +65,7 @@
                          </v-list-group>
                          <v-list-item
                               v-else
-                              :prepend-icon="getIcon(product.name)"
+                              :prepend-icon="product.icon"
                               :title="product.name"
                               :class="{ 'active-item': activeItem === product.id }"
                               @click="navigateToProduct(product)"
@@ -185,31 +183,6 @@ export default {
                showList: [],
                items: [],
                bread: ['ALL'],
-               icon: {
-                    'ALL' : 'mdi-alpha-a-circle',
-                    'AIR COMPRESSOR' : 'mdi-air-conditioner',
-                    'BATHROOM & ACCESSORIES' : 'mdi-toilet',
-                    'CHAIN BLOCK' : 'mdi-jump-rope',
-                    'EYE HOOK' : 'mdi-hook',
-                    'FIRE PROTECTION' : 'mdi-fire-extinguisher', 
-                    'FLANGES & JOINTS ACCESSORIES' : 'mdi-set-center',
-                    'HYDRANTS' : 'mdi-fire-hydrant',
-                    'INDUSTRIAL FAN' : 'mdi-fan',
-                    'LOAD BINDERS' : 'mdi-webhook',
-                    'MANHOLE COVER' : 'mdi-video-input-svideo',
-                    'PAINT' : 'mdi-draw',
-                    'PIPES & FITTINGS' : 'mdi-pipe',
-                    'POWER TOOLS' : 'mdi-tools',
-                    'PULLING HOIST' : 'mdi-cog',
-                    'PUMP': 'mdi-pump',
-                    'SAFETY EQUIPMENT': 'mdi-safety-goggles',
-                    'TROLLEY' : 'mdi-dolly',
-                    'VALVES' : 'mdi-pipe-valve',
-                    'WATER METER' : 'mdi-meter-gas',
-                    'WATER TANK' : 'mdi-water-boiler',
-                    'WEBBING SLINGS' : 'mdi-alpha-w-circle',
-                    '': 'mdi-jump-rope',
-               },
                itemDialog: false,
                selectedItem: null,
                searchItem: '',
@@ -238,9 +211,6 @@ export default {
                } catch(err) {
                     this.clearData()
                }
-          },
-          getIcon(productName) {
-               return this.icon[productName] || 'mdi-help-circle'
           },
           navigateToProduct(product) {
                this.activeItem = product.id
@@ -336,7 +306,8 @@ export default {
                }
           },
           getProductImage(productName) {
-               return new URL(`../../assets/products/${productName}.jpeg`, import.meta.url).href
+               // return new URL(`../../assets/products/${productName}.jpeg`, import.meta.url).href
+               return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
           },
           searchItems(){
                if (!this.searchItem || this.searchItem.trim() === '') {
