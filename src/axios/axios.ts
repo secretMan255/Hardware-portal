@@ -13,7 +13,7 @@ export class AxiosClient {
     if (!this.instance) {
       this.instance = axios.create({
         baseURL: import.meta.env.VITE_API_BASE_URL,
-        timeout: 1000,
+        timeout: 10000,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_BEREAR_TOKEN}`,
