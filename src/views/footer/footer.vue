@@ -43,21 +43,24 @@
           >
                <v-card title="Subscribe Newsletter" class="pa-5">
                     <v-card-text>
-                         <p class="">Our Customer Service will answer your enquiry as quickly as possible excluding weekend.</p>
+                         <p>Our Customer Service will answer your enquiry as quickly as possible excluding weekend.</p>
                          <v-text-field
                               v-model="email"
                               color="primary"
                               label="Email"
                               variant="underlined"
+                              clearable
                          >
-                         <template #label>
-                              <span class="text-red"><strong>* </strong></span>Email
-                         </template>
+                              <template #label>
+                                   <span class="text-red"><strong>* </strong></span>Email
+                              </template>
                          </v-text-field>
 
-                         <v-row>
+                         <p v-if="emailError" class="text-red"> {{ emailHint }}</p>
+
+                         <v-row class="mt-1">
                               <v-col cols="12" sm="6">
-                                   <v-btn block @click="submitSubscripton()">SUBSCRIBE</v-btn>
+                                   <v-btn block :loading="loading" @click="submitSubscripton()">SUBSCRIBE</v-btn>
                               </v-col>
                               <v-col cols="12" sm="6">
                                    <v-btn block @click="cancelSubscription()">CANCEL</v-btn>
@@ -75,7 +78,10 @@ export default {
      data() {
           return {
                subscribeDialog: false,
-               email: ''
+               email: '',
+               emailHint: 'xxxxxx@gmail.com',
+               emailError: false,
+               loading: false,
           }
      },
      methods: {
@@ -88,12 +94,13 @@ export default {
           },
           async submitSubscripton() {
                try {
-                    if (!this.email) {
+                    if (!this.validateEmail()) {
                          return
                     }
-                    
+
+                    this.loading = true
+                    this.emailError = false
                     const res = await CallApi.subscribe(this.email)
-                    console.log('res: ' , res)
                     if (res.ret != 0) {
                          return
                     }
@@ -102,7 +109,27 @@ export default {
                } catch (err) {
                     console.log('failed: ', err)
                     this.cancelSubscription()
+               } finally {
+                    this.loading = false
                }
+          },
+          validateEmail() {
+               const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+               if (!this.email) {
+                    this.emailHint = 'Email is required.'
+                    this.emailError = true
+                    return false
+               }
+
+               if (!emailRegex.test(this.email)) {
+                    this.emailHint = 'Invalid email address'
+                    this.emailError = true
+                    return false
+               }
+
+               this.emailHint = 'example@gmail.con'
+               this.emailError = false
+               return true
           }
      }
 }
