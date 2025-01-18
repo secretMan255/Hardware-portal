@@ -22,6 +22,7 @@
                          <v-btn
                               variant="text"
                               rounded
+                              @click=""
                          >
                               Edit Account
                          </v-btn>
@@ -60,6 +61,7 @@
      <v-dialog
           v-model="emailDialog"
           max-width="600"
+          persistent
      >
           <v-card
                prepend-icon="mdi-account"
@@ -69,9 +71,10 @@
                     <v-row dense>
                          <v-col
                               cols="12"
-                              md="6"
+                              md="12"
                          >
                          <v-text-field
+                              variant="outlined"
                               v-model="emailLoginParam.email"
                               label="Email*"
                               required
@@ -80,9 +83,10 @@
 
                          <v-col
                               cols="12"
-                              md="6"
+                              md="12"
                          >
                          <v-text-field
+                              variant="outlined"
                               v-model="emailLoginParam.password"
                               label="Password*"
                               type="password"
@@ -93,7 +97,12 @@
 
                     <p v-if="required" class="text-red text-caption pt-0">{{ this.loginError }}</p>
                     <small class="text-caption text-medium-emphasis">*indicates required field</small>
-                    <p class="text-caption resetPassword" @click="resetPassword">Reset password</p>
+                    <div>
+                         <a class="text-caption resetPassword" @click="createAccount">Create Account</a>
+                    </div>
+                    <div>
+                         <a class="text-caption resetPassword" @click="resetPassword">Reset password</a>
+                    </div>
                </v-card-text>
 
                <v-divider></v-divider>
@@ -119,78 +128,18 @@
           </v-card>
      </v-dialog>
 
-     <v-dialog
+     <ResetPasswordDialog
           v-model="resetPasswordDialog"
-          max-width="550"
-     >
-          <v-card
-               prepend-icon="mdi-account"
-               title="Reset Password"
-          >
-               <v-card-text>
-                    <v-row dense>
-                         <v-col
-                              cols="12"
-                              md="10"
-                         >
-                              <v-text-field
-                                   v-model="resetPasswordParam.email"
-                                   label="Email*"
-                                   required
-                                   :disabled="disableEmail"
-                              ></v-text-field>
-                         </v-col>
+          :reset-password-param="resetPasswordParam"
+          :loading-send-otp="loadingSendOTP"
+          :loading-reset-password="loadingResetPassword"
+          :disable-email="disableEmail"
+          :reset-error="resetError"
+          @send-otp="sendOTP"
+          @update-password="updatePassword"
+     ></ResetPasswordDialog>
 
-                         <v-col
-                              cols="12"
-                              md="2"
-                              class="d-flex justify-center"
-                         >
-                              <v-btn :loading="loadingSendOTP" :disabled="resetPasswordParam.email === '' || disableEmail" variant="plain" size="x-large" class="otpText" @click="sendOTP">SEND OPT</v-btn>
-                         </v-col>
-
-                         <v-col
-                              cols="12"
-                              md="12"
-                         >
-                              <v-text-field
-                                   v-model="resetPasswordParam.password"
-                                   label="Password*"
-                                   type="password"
-                                   hint="Password must contain number and alphabet"
-                                   required
-                              ></v-text-field>
-                         </v-col>
-                         <v-col 
-                              cols="12"
-                              md="12"
-                         >    
-                              <p class="d-flex justify-center mb-2">Enter OTP</p>
-                              <v-otp-input class="mt-0 pt-0" v-model="resetPasswordParam.otp" variant="solo-filled"></v-otp-input>
-                         </v-col>
-                    </v-row>
-                    {{ this.resetError }}
-               </v-card-text>
-               <v-divider></v-divider>
-               <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                         :loading="loadingResetPassword"
-                         :disabled="resetPasswordParam.password === '' || resetPasswordParam.opt === ''"
-                         text="RESET PASSWORD"
-                         variant="plain"
-                         @click="updatePassword"
-                    ></v-btn>
-
-                    <v-btn
-                         :loading="loadingResetPassword"
-                         text="CLOSE"
-                         variant="plain"
-                         @click="resetPasswordDialog = false"
-                    ></v-btn>
-               </v-card-actions>
-          </v-card>
-     </v-dialog>
+     <CreateAccount v-model="createAccountDialog" />
 
      <v-snackbar
           v-model="snackbar"
@@ -215,8 +164,14 @@
 <script>
 import { CallApi } from '../../CallApi/callApi';
 import { executeRecaptcha, loadGoogleApi } from '../../utils/utils';
+import ResetPasswordDialog from './resetPassword/resetPasswordDialog.vue';
+import CreateAccount from './createAccount/createAccount.vue';
 
 export default {
+     components: {
+          ResetPasswordDialog,
+          CreateAccount
+     },
      data() {
           return {
                emailDialog: false,
@@ -224,6 +179,7 @@ export default {
                snackbarMsg: '',
                required: false,
                resetPasswordDialog: false,
+               createAccountDialog: false,
                disableEmail: false,
                loadingSendOTP: false,
                loadingResetPassword: false,
@@ -310,6 +266,7 @@ export default {
           emailLoginPage() {
                this.emailDialog = true
           },
+          
           async emailLogin() {
                try {
                     if (this.emailLoginParam.email == '' || this.emailLoginParam.password == '') {
@@ -354,6 +311,9 @@ export default {
           },
           resetPassword() {
                this.resetPasswordDialog = true    
+          },
+          createAccount() {
+               this.createAccountDialog = true
           },
           async sendOTP() {
                try {
@@ -466,12 +426,7 @@ export default {
 }
 </script>
 
-<style>
-.otpText{
-     font-size: 15px;
-     margin-left: 20px;
-}
-
+<style scoped>
 .resetPassword {
      cursor: pointer;
      text-decoration: underline;
