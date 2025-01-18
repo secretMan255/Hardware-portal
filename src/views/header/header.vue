@@ -1,19 +1,20 @@
 <template>
      <v-app-bar app dense>
-               <!-- <v-toolbar-title>company name</v-toolbar-title> -->
                <div class="app-bar-content">
                     <p class="company-name" @click="navigationTo('/')">Company Name</p>
                     <p class="nav-link" @click="navigationTo('/')">HOME</p>
                     <p class="nav-link" @click="navigationTo('/about')">ABOUT US</p>
                     <p class="nav-link" @click="navigationTo('/product')">PRODUCT</p>
                </div>
-               <!-- <v-btn to="/" plain>Home</v-btn>
-          <v-btn to="/about" plain>About</v-btn> -->
+               <profile></profile>
+               <cart></cart>
      </v-app-bar>
 </template>
 
 <script setup>
 import { useRouter} from 'vue-router'
+import cart from './cart.vue';
+import profile from './profile.vue'
 
 const router = useRouter()
 
