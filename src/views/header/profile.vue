@@ -139,13 +139,17 @@
           @update-password="updatePassword"
      ></ResetPasswordDialog>
 
-     <CreateAccount v-model="createAccountDialog" />
+     <CreateAccount 
+          v-model="createAccountDialog"
+          :cityItem="cityItem"
+          @update-snackbar="updateSnackbar"
+     />
 
      <v-snackbar
           v-model="snackbar"
           vertical
      >
-          <div class="text-subtitle-1 pb-2">LOGIN</div>
+          <div class="text-subtitle-1 pb-2">Profile</div>
 
           <p>{{ snackbarMsg }}</p>
 
@@ -198,7 +202,8 @@ export default {
                     email: '',
                     otp: '',
                     password: ''
-               }
+               },
+               cityItem: []
           }
      },
      mounted() {
@@ -209,6 +214,42 @@ export default {
           }
      },
      methods: {
+          async getCityItem(){
+               const res = await CallApi.getCityItem(1)
+               
+               if (res.data.length <= 0) {
+                    this.cityItem = [
+                         'Alor Setar',
+                         'Ampang Jaya',
+                         'Batu Pahat',
+                         'Bintulu',
+                         'George Town',
+                         'Ipoh',
+                         'Iskandar Puteri',
+                         'Johor Bahru',
+                         'Kajang',
+                         'Klang',
+                         'Kuala Lumpur',
+                         'Kuala Terengganu',
+                         'Kuching',
+                         'Miri',
+                         'Petaling Jaya',
+                         'Seberang Perai',
+                         'Seremban',
+                         'Shah Alam',
+                         'Subang Jaya',
+                         'Sungai Petani',
+                         'Taiping',
+                         'Tawau',
+                         'Ulu Tiram',
+                         'Victoria (Labuan)'
+                    ]
+               }
+
+               for (let city of res.data) {
+                    this.cityItem.push(city.name)
+               }
+          },
           async googleLogin() {
                await loadGoogleApi()
                .then(() => {
@@ -264,6 +305,8 @@ export default {
                return JSON.parse(atob(base64))
           },
           emailLoginPage() {
+               this.emailLoginParam.email = ''
+               this.emailLoginParam.password = ''
                this.emailDialog = true
           },
           
@@ -283,7 +326,7 @@ export default {
                     }
                     
                     const res = await CallApi.userLogin(loginPayload)
-                    console.log('res: ' , res)
+                   
                     if (res.ret == -1 || res.data.error) {
                          this.loginError = res.data.error
                          this.triggerSnackBar(res.data.error)
@@ -296,20 +339,22 @@ export default {
                          name: res.data.name,
                          email: res.data.email,
                     }
-                    console.log('user: ', this.user)
                     this.emailDialog = false
                     this.emailLoginParam.email = ''
                     this.emailLoginParam.password = ''
                     this.triggerSnackBar('Signin successfilly')
                } catch (err) {
                     this.logout()
-                    console.log('err: ' , err)
+                    
                     this.triggerSnackBar('Invalid email or password')
                } finally {
                     this.loadingEmailLogin = false
                }
           },
           resetPassword() {
+               this.resetPasswordParam.email = ''
+               this.resetPasswordParam.otp = ''
+               this.resetPasswordParam.password = ''
                this.resetPasswordDialog = true    
           },
           createAccount() {
@@ -329,7 +374,7 @@ export default {
                          recaptchaToken: await executeRecaptcha('email_login')
                     }
 
-                    const sendOTP = await CallApi.sendOTP(sendOtpPayload)
+                    const sendOTP = await CallApi.sendResetPasswordOTP(sendOtpPayload)
 
                     if (sendOTP?.data) {
                          this.triggerSnackBar(sendOTP.data[0]?.ErrorMsg)
@@ -357,7 +402,7 @@ export default {
                          this.triggerSnackBar('Invalid Password.')
                          return
                     }
-                    console.log('otp: ' , this.resetPasswordParam.otp)
+                    
                     if (this.resetPasswordParam.otp.length <= 0) {
                          this.disableEmail = false
                          this.triggerSnackBar('Invalid OTP.')
@@ -386,7 +431,6 @@ export default {
                     this.disableEmail = false
                     this.resetPasswordDialog = false
                } catch (err) {
-                    console.log('err: ' , err)
                     this.triggerSnackBar('Invalid OTP.')
                } finally {
                     this.loadingResetPassword = false
@@ -416,12 +460,19 @@ export default {
                this.resetPasswordParam.password = ''
           },
           emailValidate(email) {
-               return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+               return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.com)$/.test(email)
           },
           triggerSnackBar(msg){
                this.snackbar = true
                this.snackbarMsg = msg
-          }
+          },
+          updateSnackbar({ show, message }) {
+               this.snackbar = show 
+               this.snackbarMsg = message
+          },
+     },
+     mounted() {
+          this.getCityItem()
      }
 }
 </script>
