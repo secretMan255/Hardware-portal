@@ -36,6 +36,7 @@
                                    required
                                    :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                                    @click:append-inner="togglePassword"
+                                   class="mb-3"
                               ></v-text-field>
                               <v-text-field
                                    variant="outlined"
@@ -67,7 +68,7 @@
                     <v-spacer></v-spacer>
                          <v-btn
                               :loading="loadingResetPassword"
-                              :disabled="resetPasswordParam.password === '' || resetPasswordParam.otp === ''  || !isPasswordMatch"
+                              :disabled="isEmailValid || isPasswordMatch || isOtpValid"
                               text="RESET PASSWORD"
                               variant="plain"
                               @click="updatePassword"
@@ -85,6 +86,7 @@
 </template>
    
 <script>
+import { emailValidate, validatePassword, validateOtp } from '../../../utils/utils';
    export default {
      props: {
           modelValue: {
@@ -121,13 +123,13 @@
      },
      computed: {
           isPasswordMatch() {
-               return this.resetPasswordParam.password === this.confirmPassword;
+               return !(this.resetPasswordParam.password === this.confirmPassword && validatePassword(this.resetPasswordParam.password))
           },
           isEmailValid() {
-               return !(
-                    this.resetPasswordParam.email &&
-                    this.emailValidate(this.resetPasswordParam.email)
-               )
+               return !emailValidate(this.resetPasswordParam.email)
+          },
+          isOtpValid() {
+               return !validateOtp(this.resetPasswordParam.otp)
           }
      },
      methods: {
@@ -139,13 +141,11 @@
                     this.disableOTP = false
                }, 300000)
           },
-          emailValidate(email) {
-               return (email.length <= 45 && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.com)$/.test(email))
-          },
           updatePassword() {
                this.$emit("update-password")
           },
           closeDialog() {
+               this.confirmPassword = ''
                this.$emit("update:modelValue", false)
           },
           updateDialog(newValue) {

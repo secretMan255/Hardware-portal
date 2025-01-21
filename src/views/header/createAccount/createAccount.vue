@@ -45,6 +45,7 @@
                                    :type="showPassword ? 'text' : 'password'" 
                                    v-model="confirmPass"
                                    label="Confirm Password*"
+                                   hint="Password must be same"
                                    required
                                    append-inner-icon="mdi-eye"
                                    @click:append-inner="togglePasswordVisibility"
@@ -122,7 +123,7 @@
                     <v-btn :disabled="isCreateAccountDisabled" :loading="registerLoading" @click="createUser">
                          REGISTER
                     </v-btn>
-                    <v-btn @click="closeDialog">
+                    <v-btn :loading="registerLoading" @click="closeDialog">
                          CLOSE
                     </v-btn>
                </v-card-actions>
@@ -131,6 +132,7 @@
 </template>
 
 <script>
+import { emailValidate, validateName, validatePassword, validateOtp, validatePhone, validateAddress, validatePostcode } from '../../../utils/utils';
 import { CallApi } from '../../../CallApi/callApi'
 import { executeRecaptcha } from '../../../utils/utils'
 
@@ -144,6 +146,14 @@ export default {
                type: Array,
                required: true,
           },
+          countryItem: {
+               type: Array,
+               required: true
+          },
+          countryDisable: {
+               type: Boolean,
+               required: true
+          }
      },
      data() {
           return {
@@ -153,7 +163,7 @@ export default {
                     email: '',
                     name: '',
                     password: '',
-                    phone: null,
+                    phone: '',
                     address: '',
                     postCode: '',
                     city: '',
@@ -161,9 +171,7 @@ export default {
                     otp: ''
                },
                confirmPass: '',
-               countryItem: ['Malaysia'],
                disableCreate: true,
-               countryDisable: true,
                disableResuestOTP: false,
                otpLoading: false,
                registerLoading: false
@@ -180,43 +188,10 @@ export default {
           updateDialog(newValue) {
                this.$emit("update:modelValue", newValue)
           },
-          emailValidate(email) {
-               return (email.length <= 45 && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.com)$/.test(email))
-          },
-          validatePassword(pass) {
+          isPasswordValid(pass) {
                return (
-                    pass.length >= 8 &&
-                    pass.length <= 16 &&
-                    /[A-Z]/.test(pass) &&
-                    /[a-z]/.test(pass) &&
-                    /\d/.test(pass) &&
-                    /[!_@#$%^&*(),.?":{}|<>]/.test(pass) &&
+                    validatePassword(pass) &&
                     pass === this.confirmPass
-               )
-          },
-          validatePhone(phone) {
-               return /^\d{8,15}$/.test(phone)
-          },
-          validateAddress(address) {
-               return (
-                    address.length >= 1 &&
-                    address.length <= 255
-               )
-          },
-          validatePostcode(postcode) {
-               return (
-                    postcode.length === 5
-               )
-          },
-          validateName(name) {
-               return (
-                    name.length >= 1 &&
-                    name.length <= 45
-               )
-          },
-          validateOtp(otp) {
-               return (
-                    otp.length === 6
                )
           },
           async requestOTP() {
@@ -305,40 +280,39 @@ export default {
           isRequestOtpDisabled() {
                return !(
                     this.createAccount.email &&
-                    this.emailValidate(this.createAccount.email) &&
+                    emailValidate(this.createAccount.email) &&
                     this.createAccount.name &&
-                    this.validateName(this.createAccount.name) &&
+                    validateName(this.createAccount.name) &&
                     this.createAccount.password &&
-                    this.validatePassword(this.createAccount.password) 
-                    // &&
-                    // this.createAccount.phone &&
-                    // this.validatePhone(this.createAccount.phone) &&
-                    // this.createAccount.address &&
-                    // this.validateAddress(this.createAccount.address) && 
-                    // this.createAccount.postCode &&
-                    // this.validateAddress(this.createAccount.postCode) && 
-                    // this.createAccount.city &&
-                    // this.createAccount.country
+                    this.isPasswordValid(this.createAccount.password) &&
+                    this.createAccount.phone &&
+                    validatePhone(this.createAccount.phone) &&
+                    this.createAccount.address &&
+                    validateAddress(this.createAccount.address) && 
+                    this.createAccount.postCode &&
+                    validatePostcode(this.createAccount.postCode) && 
+                    this.createAccount.city &&
+                    this.createAccount.country
                )
           },
           isCreateAccountDisabled() {
                return !(
                     this.createAccount.email &&
-                    this.emailValidate(this.createAccount.email) &&
+                    emailValidate(this.createAccount.email) &&
                     this.createAccount.name &&
-                    this.validateName(this.createAccount.name) &&
+                    validateName(this.createAccount.name) &&
                     this.createAccount.password &&
-                    this.validatePassword(this.createAccount.password) &&
+                    this.isPasswordValid(this.createAccount.password) &&
                     this.createAccount.phone &&
-                    this.validatePhone(this.createAccount.phone) &&
+                    validatePhone(this.createAccount.phone) &&
                     this.createAccount.address &&
-                    this.validateAddress(this.createAccount.address) && 
+                    validateAddress(this.createAccount.address) && 
                     this.createAccount.postCode &&
-                    this.validateAddress(this.createAccount.postCode) && 
+                    validatePostcode(this.createAccount.postCode) && 
                     this.createAccount.city &&
                     this.createAccount.country &&
                     this.createAccount.otp &&
-                    this.validateOtp(this.createAccount.otp) &&
+                    validateOtp(this.createAccount.otp) &&
                     this.createAccount.country
                )
           }
