@@ -48,3 +48,38 @@ export const executeRecaptcha = async (action: string): Promise<string> => {
   const siteKey = import.meta.env.VITE_SITE_KEY;
   return await grecaptcha.execute(siteKey, { action });
 };
+
+export function emailValidate(email: string) {
+  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.com)$/.test(email);
+}
+
+export function validatePassword(pass: string) {
+  return (
+    pass.length >= 8 &&
+    pass.length <= 16 &&
+    /[A-Z]/.test(pass) &&
+    /[a-z]/.test(pass) &&
+    /\d/.test(pass) &&
+    /[!_@#$%^&*(),.?":{}|<>]/.test(pass)
+  );
+}
+
+export function validateOtp(otp: string) {
+  return otp.length === 6;
+}
+
+export function validateName(name: string) {
+  return name.length >= 1 && name.length <= 45;
+}
+
+export function validatePhone(phone: string) {
+  return /^\d{8,15}$/.test(phone);
+}
+
+export function validateAddress(address: string) {
+  return address.length >= 1 && address.length <= 255;
+}
+
+export function validatePostcode(postcode: string) {
+  return postcode.length === 5;
+}
