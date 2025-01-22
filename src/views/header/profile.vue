@@ -22,7 +22,7 @@
                          <v-btn
                               variant="text"
                               rounded
-                              @click=""
+                              @click="editAccount"
                          >
                               Edit Account
                          </v-btn>
@@ -87,10 +87,13 @@
                          >
                          <v-text-field
                               variant="outlined"
+                              :type="showPassword ? 'text' : 'password'"
                               v-model="emailLoginParam.password"
                               label="Password*"
                               type="password"
                               required
+                              :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                              @click:append-inner="togglePassword"
                          ></v-text-field>
                          </v-col>
                     </v-row>
@@ -112,7 +115,7 @@
 
                     <v-btn
                          :loading="loadingEmailLogin"
-                         :disabled="emailLoginParam.email === '' || emailLoginParam.password === ''"
+                         :disabled="!isEmailValid || emailLoginParam.password === ''"
                          text="LOGIN"
                          variant="plain"
                          @click="emailLogin"
@@ -127,7 +130,7 @@
                </v-card-actions>
           </v-card>
      </v-dialog>
-
+     
      <ResetPasswordDialog
           v-model="resetPasswordDialog"
           :reset-password-param="resetPasswordParam"
@@ -142,8 +145,18 @@
      <CreateAccount 
           v-model="createAccountDialog"
           :cityItem="cityItem"
+          :countryDisable="countryDisable"
+          :countryItem="countryItem"
           @update-snackbar="updateSnackbar"
      />
+
+     <EditAccount
+          v-model="editAccountDialog"
+          :cityItem="cityItem"
+          :countryDisable="countryDisable"
+          :countryItem="countryItem"
+          :editAccountInfor="editAccountInfor"
+     ></EditAccount>
 
      <v-snackbar
           v-model="snackbar"
@@ -167,29 +180,34 @@
 
 <script>
 import { CallApi } from '../../CallApi/callApi';
-import { executeRecaptcha, loadGoogleApi } from '../../utils/utils';
+import { executeRecaptcha, loadGoogleApi, emailValidate } from '../../utils/utils';
 import ResetPasswordDialog from './resetPassword/resetPasswordDialog.vue';
 import CreateAccount from './createAccount/createAccount.vue';
+import EditAccount from './editAccount/editAccount.vue';
 
 export default {
      components: {
           ResetPasswordDialog,
-          CreateAccount
+          CreateAccount,
+          EditAccount
      },
      data() {
           return {
-               emailDialog: false,
+               showPassword: false,
                snackbar: false,
                snackbarMsg: '',
                required: false,
+               emailDialog: false,
                resetPasswordDialog: false,
                createAccountDialog: false,
+               editAccountDialog: false,
                disableEmail: false,
                loadingSendOTP: false,
                loadingResetPassword: false,
                loadingEmailLogin: false,
                loginError: '*Please enter the required field',
                resetError: '',
+               countryDisable: true,
                user: {
                     name: '',
                     email: '',
@@ -203,17 +221,20 @@ export default {
                     otp: '',
                     password: ''
                },
-               cityItem: []
+               editAccountInfor: {},
+               cityItem: [],
+               countryItem: ['Malaysia']
           }
      },
-     mounted() {
-          sessionStorage.removeItem('user')
-          const userData = sessionStorage.getItem('user')
-          if (userData) {
-               this.user = JSON.parse(userData)
-          }
+     computed: {
+          isEmailValid() {
+               return emailValidate(this.emailLoginParam.email)
+          },
      },
      methods: {
+          togglePassword() {
+               this.showPassword = !this.showPassword
+          },
           async getCityItem(){
                const res = await CallApi.getCityItem(1)
                
@@ -280,7 +301,6 @@ export default {
                     }
 
                     const res = await CallApi.userLogin(userCredential)
-                    
                     if (res.ret == -1 || res.data.error) {
                          this.logout()
                          this.triggerSnackBar(`Failed to login. ${res.data.error}`)
@@ -289,14 +309,17 @@ export default {
 
                     this.triggerSnackBar('Login Successfully')
                     this.logout()
-                    sessionStorage.setItem('user', JSON.stringify(this.user))
+                    sessionStorage.setItem('user', JSON.stringify(res.data))
+               
+                    this.editAccountInfor = { ...res.data }
+                    
                     this.user = {
                          name: userData.name,
                          email: userData.email,
                     }
                } catch (err) {
                     this.logout()
-                    this.triggerSnackBar(`Failed to login. ${err}`)
+                    this.triggerSnackBar(`Failed to login. Please try latter.`)
                }
           },
           parseJwt(token) {
@@ -312,12 +335,6 @@ export default {
           
           async emailLogin() {
                try {
-                    if (this.emailLoginParam.email == '' || this.emailLoginParam.password == '') {
-                         this.loginError = '*Please enter the required field'
-                         this.required = true
-                         return
-                    }
-
                     this.loadingEmailLogin = true
 
                     const loginPayload = {
@@ -334,7 +351,11 @@ export default {
                     }
 
                     this.logout()
+                    
                     sessionStorage.setItem('user', JSON.stringify(res.data))
+
+                    this.editAccountInfor = { ...res.data }
+
                     this.user = {
                          name: res.data.name,
                          email: res.data.email,
@@ -342,7 +363,7 @@ export default {
                     this.emailDialog = false
                     this.emailLoginParam.email = ''
                     this.emailLoginParam.password = ''
-                    this.triggerSnackBar('Signin successfilly')
+                    this.triggerSnackBar('Signin successfully')
                } catch (err) {
                     this.logout()
                     
@@ -360,9 +381,12 @@ export default {
           createAccount() {
                this.createAccountDialog = true
           },
+          editAccount() {
+               this.editAccountDialog = true
+          },
           async sendOTP() {
                try {
-                    if (!this.emailValidate(this.resetPasswordParam.email)) {
+                    if (!this.isEmailValid) {
                          this.resetError = 'Invalid email.'
                          return 
                     }
@@ -391,13 +415,13 @@ export default {
           },
           async updatePassword() {
                try {
-                    if (!this.emailValidate(this.resetPasswordParam.email)) {
+                    if (!isEmailValid(this.resetPasswordParam.email)) {
                          this.disableEmail = false     
                          this.triggerSnackBar('Invalid Email.')
                          return
                     }
                     
-                    if (this.resetPasswordParam.password.length <= 7 || this.resetPasswordParam.password > 16) {
+                    if (this.resetPasswordParam.password.length < 8 || this.resetPasswordParam.password > 16) {
                          this.disableEmail = false
                          this.triggerSnackBar('Invalid Password.')
                          return
@@ -459,9 +483,6 @@ export default {
                this.resetPasswordParam.otp = ''
                this.resetPasswordParam.password = ''
           },
-          emailValidate(email) {
-               return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.com)$/.test(email)
-          },
           triggerSnackBar(msg){
                this.snackbar = true
                this.snackbarMsg = msg
@@ -473,6 +494,13 @@ export default {
      },
      mounted() {
           this.getCityItem()
+
+          const userData = sessionStorage.getItem('user')
+          if (userData) {
+               this.user = JSON.parse(userData)
+          } else {
+               this.user = {}
+          }
      }
 }
 </script>
