@@ -1,81 +1,79 @@
 <template>
-     <v-card>
-          <v-navigation-drawer :width="460" permanent expand-on-hover rail>
-               <v-list>
-                    <v-list-item
-                         prepend-avatar="../../assets/ponke.png"
-                         subtitle="PRODUCTS"
-                    ></v-list-item>
-               </v-list>
-                    <v-divider></v-divider>
-               <v-list density="compact" nav >
-                    <v-list-item
-                         :prepend-icon="'mdi-alpha-a-circle'"
-                         :key="0"
-                         :title="'ALL'"
+     <v-navigation-drawer :width="460" permanent expand-on-hover rail>
+          <v-list>
+               <v-list-item
+                    prepend-avatar="../../assets/ponke.png"
+                    subtitle="PRODUCTS"
+               ></v-list-item>
+          </v-list>
+               <v-divider></v-divider>
+          <v-list density="compact" nav >
+               <v-list-item
+                    :prepend-icon="'mdi-alpha-a-circle'"
+                    :key="0"
+                    :title="'ALL'"
+                    :class="{ 'active-item': activeItem === 0 }"
+                    @click="navigateToProduct(0)"
+               >
+               </v-list-item>
+               
+               <template v-for="(product, index) in products" :key="`group=${product.id}`">
+                    <v-list-group
+                         v-if="product.children.length > 0"
+                         :prepend-icon="product.icon"
                          :class="{ 'active-item': activeItem === 0 }"
-                         @click="navigateToProduct(0)"
+                         :title="product.name"
                     >
-                    </v-list-item>
-                    
-                    <template v-for="(product, index) in products" :key="`group=${product.id}`">
-                         <v-list-group
-                              v-if="product.children.length > 0"
-                              :prepend-icon="product.icon"
-                              :class="{ 'active-item': activeItem === 0 }"
-                              :title="product.name"
-                         >
-                              <template v-slot:activator="{ props }">
-                                   <v-list-item 
-                                        v-bind="props" 
-                                        :title="product.name" 
-                                        :class="{ 'active-item': activeItem === product.id }">
-                                   </v-list-item>
-                              </template>
+                         <template v-slot:activator="{ props }">
+                              <v-list-item 
+                                   v-bind="props" 
+                                   :title="product.name" 
+                                   :class="{ 'active-item': activeItem === product.id }">
+                              </v-list-item>
+                         </template>
 
-                              <template
-                                   v-for="(child, index) in product.children" :key="`group=${child.id}`"
+                         <template
+                              v-for="(child, index) in product.children" :key="`group=${child.id}`"
+                              :title="child.name"
+                              @click="navigateToProduct(child)"
+                              :class="{ 'active-item': activeItem === 0 }"
+                         >
+                              <v-list-group
+                                   v-if="child.children && child.children.length > 0"
                                    :title="child.name"
-                                   @click="navigateToProduct(child)"
-                                   :class="{ 'active-item': activeItem === 0 }"
                               >
-                                   <v-list-group
-                                        v-if="child.children && child.children.length > 0"
-                                        :title="child.name"
-                                   >
-                                        <template v-slot:activator="{ props }">
-                                             <v-list-item v-bind="props" :title="child.name"></v-list-item>
-                                        </template>
-                                        <v-list-item
-                                             v-for="(grandChild, grandChildIndex) in child.children"
-                                             :key="`grandchild-group=${grandChild}`"
-                                             :title="grandChild.name"
-                                             :class="{ 'active-item': activeItem === grandChild.id }"
-                                             @click="navigateToProduct(grandChild)"
-                                        ></v-list-item>
-                                   </v-list-group>
+                                   <template v-slot:activator="{ props }">
+                                        <v-list-item v-bind="props" :title="child.name"></v-list-item>
+                                   </template>
                                    <v-list-item
-                                        v-else
-                                        :title="child.name"
-                                        :class="{ 'active-item': activeItem === child.id }"
-                                        @click="navigateToProduct(child)"
+                                        v-for="(grandChild, grandChildIndex) in child.children"
+                                        :key="`grandchild-group=${grandChild}`"
+                                        :title="grandChild.name"
+                                        :class="{ 'active-item': activeItem === grandChild.id }"
+                                        @click="navigateToProduct(grandChild)"
                                    ></v-list-item>
-                                   <v-divider></v-divider>
-                              </template>
-                         </v-list-group>
-                         <v-list-item
-                              v-else
-                              :prepend-icon="product.icon"
-                              :title="product.name"
-                              :class="{ 'active-item': activeItem === product.id }"
-                              @click="navigateToProduct(product)"
-                         ></v-list-item>
-                    </template>
-               </v-list>
-          </v-navigation-drawer>
-          
-          <v-container >
-               <!-- <div class="breadcrumb-container rounded-lg"> -->
+                              </v-list-group>
+                              <v-list-item
+                                   v-else
+                                   :title="child.name"
+                                   :class="{ 'active-item': activeItem === child.id }"
+                                   @click="navigateToProduct(child)"
+                              ></v-list-item>
+                              <v-divider></v-divider>
+                         </template>
+                    </v-list-group>
+                    <v-list-item
+                         v-else
+                         :prepend-icon="product.icon"
+                         :title="product.name"
+                         :class="{ 'active-item': activeItem === product.id }"
+                         @click="navigateToProduct(product)"
+                    ></v-list-item>
+               </template>
+          </v-list>
+     </v-navigation-drawer>
+     <v-card class="layout-card">
+          <v-container>
                <v-text-field
                     v-model="searchItem"
                     label="Search"
@@ -96,7 +94,6 @@
                     </v-breadcrumbs-item>
                </v-breadcrumbs>
                               
-               <!-- </div> -->
                <v-row class="g-5">
                     <v-col 
                          v-for="(product, index) in showList"
@@ -106,12 +103,11 @@
                          md="4" 
                          lg="3" 
                          class="pa-3"
-                         
                     >
                          <v-sheet class="pa-4">
                               <v-sheet
                                    :elevation="elevation"
-                                   class="mx-auto d-flex justify-center cursor-pointer img-container"
+                                   class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
                                    height="300"
                                    @click= navigateToProduct(product)
                               >
@@ -138,7 +134,6 @@
                     </v-col>
                </v-row>
           </v-container>
-
           <v-dialog 
                v-model="itemDialog"
                width="700"
@@ -170,11 +165,14 @@
                          </v-btn>
                </v-card>
           </v-dialog>
+          
      </v-card>
+     <Footer></Footer>
 </template>
 
 <script>
-import { CallApi } from '@/CallApi/callApi';
+import { CallApi } from '@/CallApi/callApi'
+import Footer from '../footer/footer.vue'
 
 export default {
      data() {
@@ -190,6 +188,9 @@ export default {
                elevation: 10,
           }
      },
+     components: {
+          Footer
+     },
      methods: {
           clearData() {
                this.products = []
@@ -200,6 +201,7 @@ export default {
                try {
                     const productList = await CallApi.getProductList(1)
                     const itemList = await CallApi.getItemList()
+
                     if (productList.ret != 0 || !productList || itemList.ret != 0 || !itemList) {
                          this.clearData()
                          return
@@ -306,7 +308,6 @@ export default {
                }
           },
           getProductImage(productName) {
-               // return new URL(`../../assets/products/${productName}.jpeg`, import.meta.url).href
                return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
           },
           searchItems(){
@@ -343,6 +344,10 @@ export default {
 </script>
 
 <style>
+.layout-card {
+     min-height: 1500px;
+}
+
 .breadcrumb-container {
      position: fixed;
      top: 10;
