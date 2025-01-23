@@ -180,7 +180,7 @@
 
 <script>
 import { CallApi } from '../../CallApi/callApi';
-import { executeRecaptcha, loadGoogleApi, emailValidate } from '../../utils/utils';
+import { executeRecaptcha, loadGoogleApi, emailValidate, EventBus } from '../../utils/utils';
 import ResetPasswordDialog from './resetPassword/resetPasswordDialog.vue';
 import CreateAccount from './createAccount/createAccount.vue';
 import EditAccount from './editAccount/editAccount.vue';
@@ -308,9 +308,8 @@ export default {
                     }
 
                     this.triggerSnackBar('Login Successfully')
-                    this.logout()
                     sessionStorage.setItem('user', JSON.stringify(res.data))
-               
+                    
                     this.editAccountInfor = { ...res.data }
                     
                     this.user = {
@@ -353,7 +352,7 @@ export default {
                     this.logout()
                     
                     sessionStorage.setItem('user', JSON.stringify(res.data))
-
+                    EventBus.emit('user-login-in', res.data.id)
                     this.editAccountInfor = { ...res.data }
 
                     this.user = {
@@ -366,7 +365,6 @@ export default {
                     this.triggerSnackBar('Signin successfully')
                } catch (err) {
                     this.logout()
-                    
                     this.triggerSnackBar('Invalid email or password')
                } finally {
                     this.loadingEmailLogin = false
@@ -462,6 +460,7 @@ export default {
                }
           },
           logout() {
+               EventBus.emit('user-logout-out', '')
                this.user = {
                     name: '',
                     email: ''
