@@ -1,10 +1,18 @@
 <template>
-     <v-navigation-drawer :width="460" permanent expand-on-hover rail>
+     <v-navigation-drawer v-model="drawer" width="460" temporary >
           <v-list>
                <v-list-item
                     prepend-avatar="../../assets/ponke.png"
                     subtitle="PRODUCTS"
-               ></v-list-item>
+               >
+                    <template v-slot:append>
+                         <v-btn
+                              icon="mdi-arrow-left-bold-box"
+                              variant="text"
+                              @click="toggleDrawer"
+                         ></v-btn>
+                    </template>
+               </v-list-item>
           </v-list>
                <v-divider></v-divider>
           <v-list density="compact" nav >
@@ -72,6 +80,13 @@
                </template>
           </v-list>
      </v-navigation-drawer>
+     <v-btn
+          icon="mdi-arrow-right-bold-box"
+          variant="text"
+          @click="toggleDrawer"
+          class="drawer-toggle-btn"
+     >
+     </v-btn>
      <v-card class="layout-card">
           <v-container>
                <v-text-field
@@ -160,9 +175,9 @@
                               </v-col>
                          </v-row>
                     </v-card-text>
-                    <v-btn>
-                              ADD TO CART
-                         </v-btn>
+                    <v-btn @click="addToCart">
+                         ADD TO CART
+                    </v-btn>
                </v-card>
           </v-dialog>
           
@@ -173,6 +188,7 @@
 <script>
 import { CallApi } from '@/CallApi/callApi'
 import Footer from '../footer/footer.vue'
+import { EventBus } from '../../utils/utils';
 
 export default {
      data() {
@@ -186,12 +202,26 @@ export default {
                searchItem: '',
                activeItem: 0,
                elevation: 10,
+               drawer: false
           }
      },
      components: {
           Footer
      },
      methods: {
+          addToCart() {
+               if (this.selectedItem) {
+                    EventBus.emit('add-to-cart', this.selectedItem)
+               } else {
+                    console.log('No item seleted')
+               }
+          },
+          toggleDrawer() {
+               this.drawer = !this.drawer
+          },
+          falseDrawer() {
+               this.drawer = false
+          },
           clearData() {
                this.products = []
                this.showList = []
@@ -215,6 +245,7 @@ export default {
                }
           },
           navigateToProduct(product) {
+               this.falseDrawer()
                this.activeItem = product.id
                if (product === 0) {
                     this.bread = ['ALL']
@@ -228,7 +259,7 @@ export default {
                if (item.length > 0 ) {
                     this.itemDialog = true
                     this.selectedItem = item[0]
-                    this.selectedItem.describe = JSON.parse(this.selectedItem.describe.trim())
+                    this.selectedItem.describe = JSON.parse(String(this.selectedItem.describe).trim())
                     return
                }
 
@@ -379,4 +410,11 @@ export default {
   padding-bottom: 0px;
 }
 
+.drawer-toggle-btn {
+     position: fixed; /* Position it relative to the drawer */
+     left: px; /* Adjust it slightly outside the drawer */
+     top: 50%; /* Center it vertically relative to the drawer */
+     transform: translateY(-50%); /* Adjust for perfect centering */
+     z-index: 1000; /* Ensure it stays above other elements */
+}
 </style>
