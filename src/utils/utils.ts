@@ -1,3 +1,5 @@
+import mitt from "mitt";
+
 export function loadGoogleApi() {
   return new Promise<void>((resolve, reject) => {
     if (document.getElementById("google-api")) {
@@ -83,3 +85,5 @@ export function validateAddress(address: string) {
 export function validatePostcode(postcode: string) {
   return postcode.length === 5;
 }
+
+export const EventBus = mitt();
