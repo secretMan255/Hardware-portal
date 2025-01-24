@@ -18,6 +18,7 @@ export class AxiosClient {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_BEREAR_TOKEN}`,
         },
+        withCredentials: true,
       });
 
       this.instance.interceptors.request.use(
