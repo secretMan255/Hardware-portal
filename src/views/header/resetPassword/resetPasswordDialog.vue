@@ -59,7 +59,6 @@
                               ></v-otp-input>
                          </v-col>
                     </v-row>
-                    {{ resetError }}
                </v-card-text>
 
                <v-divider></v-divider>
@@ -104,10 +103,6 @@ import { emailValidate, validatePassword, validateOtp } from '../../../utils/uti
           loadingResetPassword: {
                type: Boolean,
                default: false,
-          },
-          resetError: {
-               type: String,
-               default: "",
           },
           disableEmail: {
                type: Boolean,
