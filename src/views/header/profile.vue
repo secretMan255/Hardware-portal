@@ -115,7 +115,7 @@
 
                     <v-btn
                          :loading="loadingEmailLogin"
-                         :disabled="!isEmailValid || emailLoginParam.password === ''"
+                         :disabled="isEmailValid || emailLoginParam.password === ''"
                          text="LOGIN"
                          variant="plain"
                          @click="emailLogin"
@@ -137,7 +137,6 @@
           :loading-send-otp="loadingSendOTP"
           :loading-reset-password="loadingResetPassword"
           :disable-email="disableEmail"
-          :reset-error="resetError"
           @send-otp="sendOTP"
           @update-password="updatePassword"
      ></ResetPasswordDialog>
@@ -156,6 +155,7 @@
           :countryDisable="countryDisable"
           :countryItem="countryItem"
           :editAccountInfor="editAccountInfor"
+          @update-snackbar="updateSnackbar"
      ></EditAccount>
 
      <v-snackbar
@@ -206,7 +206,6 @@ export default {
                loadingResetPassword: false,
                loadingEmailLogin: false,
                loginError: '*Please enter the required field',
-               resetError: '',
                countryDisable: true,
                user: {
                     name: '',
@@ -228,7 +227,7 @@ export default {
      },
      computed: {
           isEmailValid() {
-               return emailValidate(this.emailLoginParam.email)
+               return !emailValidate(this.emailLoginParam.email)
           },
      },
      methods: {
@@ -331,7 +330,6 @@ export default {
                this.emailLoginParam.password = ''
                this.emailDialog = true
           },
-          
           async emailLogin() {
                try {
                     this.loadingEmailLogin = true
@@ -385,7 +383,6 @@ export default {
           async sendOTP() {
                try {
                     if (!this.isEmailValid) {
-                         this.resetError = 'Invalid email.'
                          return 
                     }
                     
@@ -413,21 +410,20 @@ export default {
           },
           async updatePassword() {
                try {
-                    if (!isEmailValid(this.resetPasswordParam.email)) {
-                         this.disableEmail = false     
+                    if (!this.isEmailValid) {    
                          this.triggerSnackBar('Invalid Email.')
                          return
                     }
                     
                     if (this.resetPasswordParam.password.length < 8 || this.resetPasswordParam.password > 16) {
                          this.disableEmail = false
-                         this.triggerSnackBar('Invalid Password.')
+                         this.triggerSnackBar('Invalid Password. Please try after 5 min')
                          return
                     }
                     
                     if (this.resetPasswordParam.otp.length <= 0) {
                          this.disableEmail = false
-                         this.triggerSnackBar('Invalid OTP.')
+                         this.triggerSnackBar('Invalid OTP. Please try after 5 min')
                          return
                     }
 
@@ -436,7 +432,7 @@ export default {
                     const updatePassPayload = {
                          email: this.resetPasswordParam.email,
                          password: this.resetPasswordParam.password,
-                         otp: Number(this.resetPasswordParam.otp),
+                         otp: this.resetPasswordParam.otp,
                          recaptchaToken: await executeRecaptcha('email_login')
                     }
 
@@ -452,11 +448,13 @@ export default {
 
                     this.disableEmail = false
                     this.resetPasswordDialog = false
+
+                    this.triggerSnackBar('Reset password successfully.')
+                    this.resetPasswordDialog = false
                } catch (err) {
-                    this.triggerSnackBar('Invalid OTP.')
+                    this.triggerSnackBar('Invalid OTP. Please try after 5 min')
                } finally {
                     this.loadingResetPassword = false
-                    this.triggerSnackBar('Reset password successfully.')
                }
           },
           logout() {
