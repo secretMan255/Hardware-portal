@@ -25,6 +25,24 @@ type UpdatePassword = {
   recaptchaToken: string;
 };
 
+type CreateAccount = {
+  email: string;
+  name: string;
+  password: string;
+  phone: number;
+  address: string;
+  postCode: number;
+  city: string;
+  country: string;
+  otp: string;
+  recaptchaToken: string;
+};
+
+type CreateAccountOTP = {
+  email: string;
+  recaptchaToken: string;
+};
+
 export class CallApi {
   private static Instance: CallApi;
 
@@ -97,9 +115,9 @@ export class CallApi {
     }
   }
 
-  public static async sendOTP(data: SendOTP) {
+  public static async sendResetPasswordOTP(data: SendOTP) {
     try {
-      return await AxiosClient.getInstance().post(`/send/opt`, data);
+      return await AxiosClient.getInstance().post(`/send/reset/otp`, data);
     } catch (err) {
       throw err;
     }
@@ -108,6 +126,38 @@ export class CallApi {
   public static async updatePassword(data: UpdatePassword) {
     try {
       return await AxiosClient.getInstance().post("/reset/password", data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async sendCreateAccountOTP(data: CreateAccountOTP) {
+    try {
+      return await AxiosClient.getInstance().post("/send/verify/otp", data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async createAccount(data: CreateAccount) {
+    try {
+      return await AxiosClient.getInstance().post("/create/account", data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async getCityItem(status: number) {
+    try {
+      return await AxiosClient.getInstance().get(`/state/?status=${status}`);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async editAccount(data: any) {
+    try {
+      return await AxiosClient.getInstance().post("/edit/account", data);
     } catch (err) {
       throw err;
     }
