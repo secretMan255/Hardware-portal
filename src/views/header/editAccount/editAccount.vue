@@ -135,6 +135,7 @@ export default {
      data() {
           return {
                editAccount: {
+                    id: this.editAccountInfor.id,
                     email: this.editAccountInfor.email || '',
                     name: this.editAccountInfor.name || '',
                     password: '',
@@ -161,28 +162,21 @@ export default {
                     const res = await CallApi.editAccount(editAccountPayload)
                     
                     if (res?.data) {
-                         
                          return
                     }
 
-                    const infor = JSON.parse(sessionStorage.getItem('user'))
+                    sessionStorage.setItem('user', JSON.stringify(this.editAccount))
 
-                    if (infor) {
-                         infor.email = this.editAccount.email
-                         infor.name = this.editAccount.name
-                         infor.phone = this.editAccount.phone
-                         infor.address = this.editAccount.address
-                         infor.postCode = this.editAccount.postCode
-                         infor.city = this.editAccount.city
-                         infor.country = this.editAccount.country
-
-                         sessionStorage.setItem('user', JSON.stringify(infor))
-                    }
-
+                    this.$emit('update-snackbar', {
+                         show: true,
+                         message: 'Updated information'
+                    })
                     this.closeDialog()
                } catch (err) {
-
-                    console.log('err: ' , err)
+                    this.$emit('update-snackbar', {
+                         show: true,
+                         message: 'Please check if the input is correct.'
+                    })
                } finally {
                     this.editLoading = false
                }
@@ -202,17 +196,26 @@ export default {
                     return true
                }
           },
-          initializeEditAccount() {
-               this.editAccount = {
-                    email: this.editAccountInfor.email || '',
-                    name: this.editAccountInfor.name || '',
-                    password: '',
-                    phone: this.editAccountInfor.phone || '',
-                    address: this.editAccountInfor.address || '',
-                    postCode: this.editAccountInfor.postCode || '',
-                    city: this.editAccountInfor.city || '',
-                    country: this.editAccountInfor.country || 'Malaysia',
-               };
+          getUserFromSession() {
+               const infor = JSON.parse(sessionStorage.getItem('user'))
+          
+               if (infor) {
+                    this.editAccount.id = infor.id
+                    this.editAccount.email = infor.email
+                    this.editAccount.name = infor.name
+                    this.editAccount.phone = infor.phone
+                    this.editAccount.address = infor.address
+                    this.editAccount.postCode = infor.postCode
+                    this.editAccount.city = infor.city
+               } else {
+                    this.editAccount.id = '' 
+                    this.editAccount.email = ''
+                    this.editAccount.name = ''
+                    this.editAccount.phone = ''
+                    this.editAccount.address = ''
+                    this.editAccount.postCode = ''
+                    this.editAccount.city = ''
+               }
           }
      },
      computed: {
@@ -235,25 +238,10 @@ export default {
           }
      },
      updated() {
-          this.initializeEditAccount();
+          this.getUserFromSession()
      },
      mounted() {
-          const infor = JSON.parse(sessionStorage.getItem('user'))
-          if (infor) {
-               this.editAccount.email = infor.email
-               this.editAccount.name = infor.name
-               this.editAccount.phone = infor.phone
-               this.editAccount.address = infor.address
-               this.editAccount.postCode = infor.postCode
-               this.editAccount.city = infor.city
-          } else {
-               this.editAccount.email = ''
-               this.editAccount.name = ''
-               this.editAccount.phone = ''
-               this.editAccount.address = ''
-               this.editAccount.postCode = ''
-               this.editAccount.city = ''
-          }
+          this.getUserFromSession()
      }
 }
 </script>
