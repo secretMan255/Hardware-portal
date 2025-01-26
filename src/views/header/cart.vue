@@ -14,14 +14,15 @@
                <v-card-text>
                     <div v-if="loginStatus" class="mx-auto text-center">
                          <v-row dense v-if="cart.length > 0">
-                              <v-col v-for="(item, index) in cart" :key="index" cols="12" md="12" class="d-flex align-center justify-space-between">
+                              <v-col v-for="(item, index) in cart" :key="index" cols="12" md="12" class="d-flex align-center justify-space-between mb-1">
                                    <v-img :aspect-ratio="1" max-height="50" max-width="100" :src="getProductImage(item.name)"></v-img>  
                                    <span class="text-subtitle-1">{{ item.name }}</span> 
-                                   <div class="">
+                                   <div>
                                         <v-icon class="mr-5" @click.stop="minusItem(item.name)" >mdi-minus</v-icon>
                                         <span>{{ item.qty }}</span>
                                         <v-icon class="ml-5" @click.stop="plusItem(item.name)">mdi-plus</v-icon>
                                    </div>
+                                   <v-icon @click.stop="removeItem(item.name)">mdi-close</v-icon>
                               </v-col>
                          </v-row>
                          <v-row v-else="cart.length <= 0" class="text-center d-flex align-center justify-center">
@@ -70,7 +71,9 @@
 </template>
 
 <script>
+import { CallApi } from '../../CallApi/callApi';
 import { EventBus } from '../../utils/utils'
+import { executeRecaptcha } from '../../utils/utils'
 
 export default {
      data: () => ({
@@ -84,7 +87,7 @@ export default {
           }
      },
      methods: {
-          minusItem(itemName){
+          async minusItem(itemName){
                const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
 
                if (itemIndex !== -1) {
@@ -97,70 +100,153 @@ export default {
                     }
 
                     sessionStorage.setItem('cart' , JSON.stringify(this.cart))
+
+                    const data = {
+                         userId: this.user,
+                         itemId: this.cart[itemIndex].id,
+                         recaptchaToken: await executeRecaptcha('email_login')
+                    }
+
+                    try {
+                         const res = await CallApi.minusItemFromCart(data)
+                         
+                         if (res.ret == 0 && res.data?.length > 0) {
+                              this.cart = res.data
+                              sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                         }
+                    } catch (err) {
+                         this.cart = []
+                    }
                }
           },
-          plusItem(itemName){
+          async plusItem(itemName){
                const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
 
                if (itemIndex !== -1) {
                     this.cart[itemIndex].qty += 1
-
                     sessionStorage.setItem('cart' , JSON.stringify(this.cart))
+
+                    const data = {
+                         userId: this.user,
+                         itemId: this.cart[itemIndex].id,
+                         recaptchaToken: await executeRecaptcha('email_login')
+                    }
+
+                    try {
+                         const res = await CallApi.addItemToCart(data)
+                         
+                         if (res.ret == 0 && res.data?.length > 0) {
+                              this.cart = res.data
+                              sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                         }
+                    } catch (err) {
+                         this.cart = []
+                    }
+               }
+          },
+          async removeItem(itemName) {
+               const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
+
+               if (itemIndex !== -1) {
+                    const data = {
+                         userId: this.user,
+                         itemId: this.cart[itemIndex].id,
+                         recaptchaToken: await executeRecaptcha('email_login')
+                    }
+
+                    this.cart.splice(itemIndex, 1)
+                    sessionStorage.setItem('cart' , JSON.stringify(this.cart))
+
+                    try {
+                         const res = await CallApi.removeItemFromCart(data)
+                         
+                         if (res.ret == 0 && res.data?.length > 0) {
+                              this.cart = res.data
+                              sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                         }
+                    } catch (err) {
+                         this.cart = []
+                    }
                }
           },
           getProductImage(productName) {
-               console.log('product: ' , productName)
                return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
+          },
+          async addItemToCart(item) {
+               const existingItemIndex = this.cart.findIndex(cartItem => cartItem.name === item.name)
+               if (existingItemIndex !== -1) {
+                    this.cart[existingItemIndex].qty += 1
+               } else {
+                    this.cart.push({ id: item.id, name: item.name, qty: 1 })
+               }
+
+               sessionStorage.setItem('cart', JSON.stringify(this.cart))
+
+               const data = {
+                    userId: this.user,
+                    itemId: item.id,
+                    recaptchaToken: await executeRecaptcha('email_login')
+               }
+
+               try {
+                    const res = await CallApi.addItemToCart(data)
+                    
+                    if (res.ret == 0 && res.data?.length > 0) {
+                         this.cart = res.data
+                         sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                    }
+               } catch (err) {
+                    this.cart = []
+               }
           },
           handleUserLoggedIn(user) {
                if (user) {
                     this.user = user
                     this.loginStatus = true
-               }               
+                    this.checkLogin()
+               } else {
+                    this.checkLogin()
+               }
           },
           handleUserLoggedOut(user) {
                this.user = null
                this.loginStatus = false
+               this.cart = []
+               sessionStorage.removeItem('cart')
           },
-          addItemToCart(item) {
-               const existingItemIndex = this.cart.findIndex(cartItem => cartItem.name === item.name)
-               if (existingItemIndex !== -1) {
-                    this.cart[existingItemIndex].qty += 1
-               } else {
-                    this.cart.push({ name: item.name, qty: 1 })
-               }
-               sessionStorage.setItem('cart', JSON.stringify(this.cart))
-          },
-          checkLogin() {
+          async checkLogin() {
                const getUserIdSession = sessionStorage.getItem('user')
+               
                if (getUserIdSession) {
                     const jsonUser = JSON.parse(getUserIdSession)
-                    console.log('jsonUser: ' , jsonUser)
                     this.user = jsonUser.id
                     this.loginStatus = true
                } 
-               console.log('getUserIdSession: ' , getUserIdSession)
 
-               const itemSession = sessionStorage.getItem('cart')
-               if (itemSession) {
-                    const jsonCart = JSON.parse(itemSession)
+               try {
+                    const getItem = await CallApi.getCart(this.user)
+                    
+                    if (getItem.ret == 0 && getItem.data?.length > 0) {
+                         getItem.data.forEach(item => {
+                              this.cart.push(item)
+                         })
+                         sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                    }
+               } catch (err) {
                     this.cart = []
-                    jsonCart.forEach(item => {
-                         this.cart.push({ name: item.name, qty: item.qty })
-                    })
-               }
+               } 
           },
           login() {
 
           }
      },
      mounted() {
-          this.checkLogin()
           EventBus.on('user-login-in', this.handleUserLoggedIn)
           EventBus.on('user-logout-out', this.handleUserLoggedOut)
           EventBus.on('add-to-cart', this.addItemToCart)
      },
      beforeMount() {
+          this.checkLogin()
           EventBus.off('user-login-in', this.handleUserLoggedIn)
           EventBus.off('user-logout-out', this.handleUserLoggedOut)
           EventBus.off('add-to-cart', this.addItemToCart)
