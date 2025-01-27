@@ -34,7 +34,7 @@
                                    :type="showPassword ? 'text' : 'password'"
                                    hint="Password must contain numbers and letters"
                                    required
-                                   :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                    @click:append-inner="togglePassword"
                                    class="mb-3"
                               ></v-text-field>
@@ -45,7 +45,7 @@
                                    :type="showPassword ? 'text' : 'password'"
                                    hint="Password must be same"
                                    required
-                                   :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                    @click:append-inner="togglePassword"
                               ></v-text-field>
                          </v-col>

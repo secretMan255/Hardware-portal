@@ -32,7 +32,7 @@
                                    v-model="createAccount.password"
                                    label="Password*"
                                    required
-                                   append-inner-icon="mdi-eye"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off' "
                                    hint="Password must contain number and alphabet"
                                    @click:append-inner="togglePasswordVisibility"
                               ></v-text-field>
@@ -47,7 +47,7 @@
                                    label="Confirm Password*"
                                    hint="Password must be same"
                                    required
-                                   append-inner-icon="mdi-eye"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                    @click:append-inner="togglePasswordVisibility"
                               ></v-text-field>
                          </v-col>

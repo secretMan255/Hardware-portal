@@ -26,8 +26,12 @@
                               <v-text-field
                                    variant="outlined"
                                    density="compact"
+                                   :type="showPassword ? 'text' : 'password'"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                    v-model="editAccount.password"
                                    label="Change Password*"
+                                   hint="Password must contain number and alphabet"
+                                   @click:append-inner="togglePasswordVisibility"
                                    required
                               ></v-text-field>
                          </v-col>
@@ -35,8 +39,12 @@
                               <v-text-field
                                    variant="outlined"
                                    density="compact"
+                                   :type="showPassword ? 'text' : 'password'"
+                                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                    v-model="confirmPassword"
                                    label="Confirm Password*"
+                                   hint="Password must be same"
+                                   @click:append-inner="togglePasswordVisibility"
                                    required
                               ></v-text-field>
                          </v-col>
@@ -146,10 +154,14 @@ export default {
                     country: this.editAccountInfor.country || 'Malaysia'
                },
                confirmPassword: '',
-               editLoading: false
+               editLoading: false,
+               showPassword: false,
           }
      },
      methods: {
+          togglePasswordVisibility() {
+               this.showPassword = !this.showPassword;
+          },
           async editUser() {
                try {
                     this.editLoading = true
