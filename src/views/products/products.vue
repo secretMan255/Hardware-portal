@@ -1,5 +1,5 @@
 <template>
-     <v-navigation-drawer v-model="drawer" width="460" temporary >
+     <v-navigation-drawer v-model="drawer" :permanent="isDesktop" width="460" temporary >
           <v-list>
                <v-list-item
                     prepend-avatar="../../assets/ponke.png"
@@ -9,6 +9,7 @@
                          <v-btn
                               icon="mdi-arrow-left-bold-box"
                               variant="text"
+                              v-if="!isDesktop"
                               @click="toggleDrawer"
                          ></v-btn>
                     </template>
@@ -83,6 +84,7 @@
      <v-btn
           icon="mdi-arrow-right-bold-box"
           variant="text"
+          v-if="!isDesktop"
           @click="toggleDrawer"
           class="drawer-toggle-btn"
      >
@@ -202,7 +204,13 @@ export default {
                searchItem: '',
                activeItem: 0,
                elevation: 10,
-               drawer: false
+               drawer: false,
+               windowWidth: window.innerWidth
+          }
+     },
+     computed: {
+          isDesktop() {
+               return this.windowWidth >= 1024
           }
      },
      components: {
@@ -218,6 +226,14 @@ export default {
           },
           toggleDrawer() {
                this.drawer = !this.drawer
+          },
+          updateWindowWidth() {
+               this.windowWidth = window.innerWidth
+               if (this.isDesktop) {
+                    this.drawer = true
+               } else {
+                    this.drawer = false
+               }
           },
           falseDrawer() {
                this.drawer = false
@@ -245,7 +261,10 @@ export default {
                }
           },
           navigateToProduct(product) {
-               this.falseDrawer()
+               if (!this.isDesktop) {
+                    this.falseDrawer()
+               }
+
                this.activeItem = product.id
                if (product === 0) {
                     this.bread = ['ALL']
@@ -367,14 +386,18 @@ export default {
      },
      async mounted() {
           await this.getProducts()
+          this.updateWindowWidth()
+          this.drawer = this.isDesktop
+          window.addEventListener("resize", this.updateWindowWidth)
      },
      beforeMount() {
           this.clearData()
+          window.removeEventListener("resize", this.updateWindowWidth)
      }
 }
 </script>
 
-<style>
+<style scoped> 
 .layout-card {
      min-height: 1500px;
 }
@@ -411,10 +434,10 @@ export default {
 }
 
 .drawer-toggle-btn {
-     position: fixed; /* Position it relative to the drawer */
-     left: px; /* Adjust it slightly outside the drawer */
-     top: 50%; /* Center it vertically relative to the drawer */
-     transform: translateY(-50%); /* Adjust for perfect centering */
-     z-index: 1000; /* Ensure it stays above other elements */
+     position: fixed; 
+     left: px; 
+     top: 50%; 
+     transform: translateY(-50%); 
+     z-index: 1000;
 }
 </style>
