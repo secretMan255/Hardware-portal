@@ -162,4 +162,36 @@ export class CallApi {
       throw err;
     }
   }
+
+  public static async getCart(userId: number) {
+    try {
+      return await AxiosClient.getInstance().get(`/cart/?id=${userId}`);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async addItemToCart(data: any) {
+    try {
+      return await AxiosClient.getInstance().post("/edit/cart/add", data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async minusItemFromCart(data: any) {
+    try {
+      return await AxiosClient.getInstance().post("/edit/cart/minus", data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async removeItemFromCart(data: any) {
+    try {
+      return await AxiosClient.getInstance().post("/edit/cart/remove", data);
+    } catch (err) {
+      throw err;
+    }
+  }
 }
