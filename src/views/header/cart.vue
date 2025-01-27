@@ -92,6 +92,7 @@ export default {
 
                if (itemIndex !== -1) {
                     const qty = this.cart[itemIndex].qty
+                    const itemId = this.cart[itemIndex].id
                     
                     if (qty === 1) {
                          this.cart.splice(itemIndex, 1)
@@ -103,7 +104,7 @@ export default {
 
                     const data = {
                          userId: this.user,
-                         itemId: this.cart[itemIndex].id,
+                         itemId: itemId,
                          recaptchaToken: await executeRecaptcha('email_login')
                     }
 
