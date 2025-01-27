@@ -50,38 +50,65 @@
                               label="Email"
                               variant="underlined"
                               clearable
+                              class="mt-2"
+                              hint="Please provide a correct email address. E.g: xxxxxxx@gmail.com"
                          >
-                              <template #label>
-                                   <span class="text-red"><strong>* </strong></span>Email
-                              </template>
                          </v-text-field>
 
                          <p v-if="emailError" class="text-red"> {{ emailHint }}</p>
 
                          <v-row class="mt-1">
-                              <v-col cols="12" sm="6">
-                                   <v-btn block :loading="loading" @click="submitSubscripton()">SUBSCRIBE</v-btn>
+                              <v-col cols="12" sm="6" class="d-flex justify-center">
+                                   <v-btn :disabled="disable || isValidate" :loading="loading" @click="submitSubscripton()" variant="plain">SUBSCRIBE</v-btn>
                               </v-col>
-                              <v-col cols="12" sm="6">
-                                   <v-btn block @click="cancelSubscription()">CANCEL</v-btn>
+                              <v-col cols="12" sm="6" class="d-flex justify-center">
+                                   <v-btn @click="cancelSubscription()" variant="plain">CANCEL</v-btn>
                               </v-col>
                          </v-row>
                     </v-card-text>
                </v-card>
      </v-dialog>
+
+     <v-snackbar
+          v-model="snackbar"
+          vertical
+     >
+          <div class="text-subtitle-1 pb-2">Subscribe</div>
+
+          <p>{{ snackbarMsg }}</p>
+
+          <template v-slot:actions>
+               <v-btn
+                    color="indigo"
+                    variant="text"
+                    @click="snackbar = false"
+               >
+                    Close
+               </v-btn>
+          </template>
+     </v-snackbar>
 </template>
 
 <script>
+import { emailValidate } from '@/utils/utils'
 import { CallApi } from '@/CallApi/callApi'
 
 export default {
      data() {
           return {
-               subscribeDialog: false,
                email: '',
+               snackbarMsg: '',
                emailHint: 'xxxxxx@gmail.com',
                emailError: false,
                loading: false,
+               disable: false,
+               snackbar: false,
+               subscribeDialog: false,
+          }
+     },
+     computed: {
+          isValidate(){
+               return !(this.email && emailValidate(this.email))
           }
      },
      methods: {
@@ -94,10 +121,6 @@ export default {
           },
           async submitSubscripton() {
                try {
-                    if (!this.validateEmail()) {
-                         return
-                    }
-
                     this.loading = true
                     this.emailError = false
                     const res = await CallApi.subscribe(this.email)
@@ -105,32 +128,21 @@ export default {
                          return
                     }
 
+                    this.disable = true
+
                     this.cancelSubscription()
                } catch (err) {
-                    console.log('failed: ', err)
-                    this.cancelSubscription()
+                    this.snackbarMsg = "Subscribe news is not available. Please try again later.";
+                    this.snackbar = true;
                } finally {
+                    setTimeout(() => {
+                         this.disable = false
+                    }, 30000)
+                    this.snackbar = true
+                    this.snackbarMsg = "Email subscribed."
                     this.loading = false
                }
           },
-          validateEmail() {
-               const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-               if (!this.email) {
-                    this.emailHint = 'Email is required.'
-                    this.emailError = true
-                    return false
-               }
-
-               if (!emailRegex.test(this.email)) {
-                    this.emailHint = 'Invalid email address'
-                    this.emailError = true
-                    return false
-               }
-
-               this.emailHint = 'example@gmail.con'
-               this.emailError = false
-               return true
-          }
      }
 }
 </script>
