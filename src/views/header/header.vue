@@ -63,6 +63,7 @@ function navigationTo(where) {
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
+  margin-right: 10px;
 }
 
 @media (max-width: 600px) {
