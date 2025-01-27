@@ -10,18 +10,16 @@
                     </v-badge>
                </v-btn>
           </template>
-          <v-card :width="loginStatus ? '550' : '500'" class="scrollable-menu" @click.stop>
+          <v-card style="max-height: 400px; width: 400px;" :width="loginStatus ? '550' : '500'" class="scrollable-menu" @click.stop>
                <v-card-text>
                     <div v-if="loginStatus" class="mx-auto text-center">
                          <v-row dense v-if="cart.length > 0">
                               <v-col v-for="(item, index) in cart" :key="index" cols="12" md="12" class="d-flex align-center justify-space-between mb-1">
                                    <v-img :aspect-ratio="1" max-height="50" max-width="100" :src="getProductImage(item.name)"></v-img>  
                                    <span class="text-subtitle-1">{{ item.name }}</span> 
-                                   <div>
-                                        <v-icon class="mr-5" @click.stop="minusItem(item.name)" >mdi-minus</v-icon>
+                                        <v-icon @click.stop="minusItem(item.name)" >mdi-minus</v-icon>
                                         <span>{{ item.qty }}</span>
-                                        <v-icon class="ml-5" @click.stop="plusItem(item.name)">mdi-plus</v-icon>
-                                   </div>
+                                        <v-icon @click.stop="plusItem(item.name)">mdi-plus</v-icon>
                                    <v-icon @click.stop="removeItem(item.name)">mdi-close</v-icon>
                               </v-col>
                          </v-row>
@@ -99,9 +97,6 @@ export default {
                     } else {
                          this.cart[itemIndex].qty -= 1
                     }
-
-                    sessionStorage.setItem('cart' , JSON.stringify(this.cart))
-
                     const data = {
                          userId: this.user,
                          itemId: itemId,
@@ -125,8 +120,7 @@ export default {
 
                if (itemIndex !== -1) {
                     this.cart[itemIndex].qty += 1
-                    sessionStorage.setItem('cart' , JSON.stringify(this.cart))
-
+                   
                     const data = {
                          userId: this.user,
                          itemId: this.cart[itemIndex].id,
@@ -156,8 +150,7 @@ export default {
                     }
 
                     this.cart.splice(itemIndex, 1)
-                    sessionStorage.setItem('cart' , JSON.stringify(this.cart))
-
+                   
                     try {
                          const res = await CallApi.removeItemFromCart(data)
                          
@@ -180,8 +173,6 @@ export default {
                } else {
                     this.cart.push({ id: item.id, name: item.name, qty: 1 })
                }
-
-               sessionStorage.setItem('cart', JSON.stringify(this.cart))
 
                const data = {
                     userId: this.user,
@@ -257,10 +248,10 @@ export default {
 
 <style scoped>
 .scrollable-menu {
-     overflow-y: auto;
-}
-.scrollable-menu {
      max-height: 400px;
      overflow-y: auto;
+     min-width: 250px;
+     max-width: 100%;
+     width: 100%;
 }
 </style>
