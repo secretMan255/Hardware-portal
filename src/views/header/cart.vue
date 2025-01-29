@@ -52,16 +52,12 @@
                     </div>
                     <div v-else class="mx-auto text-center">
                          
-                              <p class="text-caption mt-1">
-                                   You are not logged in.
+                              <p class="font-weight-bold text-caption mt-1">
+                                   You are not logged in
                               </p>
-                              <v-btn
-                                   variant="text"
-                                   rounded
-                                   @click="login"
-                              >
-                                   LOGIN
-                              </v-btn>
+                              <p class="text-caption"> 
+                                   Please click profile to login before add item to cart.
+                              </p>
                     </div>
                </v-card-text>
           </v-card>
@@ -118,7 +114,7 @@ export default {
           async plusItem(itemName){
                const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
 
-               if (itemIndex !== -1) {
+               if (itemIndex !== -1 && this.loginStatus) {
                     this.cart[itemIndex].qty += 1
                    
                     const data = {
@@ -142,7 +138,7 @@ export default {
           async removeItem(itemName) {
                const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
 
-               if (itemIndex !== -1) {
+               if (itemIndex !== -1 && this.loginStatus) {
                     const data = {
                          userId: this.user,
                          itemId: this.cart[itemIndex].id,
@@ -168,9 +164,10 @@ export default {
           },
           async addItemToCart(item) {
                const existingItemIndex = this.cart.findIndex(cartItem => cartItem.name === item.name)
-               if (existingItemIndex !== -1) {
+               
+               if (existingItemIndex !== -1 && this.loginStatus) {
                     this.cart[existingItemIndex].qty += 1
-               } else {
+               } else if (this.loginStatus) {
                     this.cart.push({ id: item.id, name: item.name, qty: 1 })
                }
 
