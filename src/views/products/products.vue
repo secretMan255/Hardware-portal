@@ -397,7 +397,7 @@ export default {
 }
 </script>
 
-<style scoped> 
+<style> 
 .layout-card {
      min-height: 1500px;
 }
@@ -418,7 +418,7 @@ export default {
 }
 
 .v-list-item.active-item {
-    background-color: #6200ea !important;
+    background-color: #555555 !important;
     color: white !important;
 }
 
@@ -435,9 +435,14 @@ export default {
 
 .drawer-toggle-btn {
      position: fixed; 
-     left: px; 
      top: 50%; 
      transform: translateY(-50%); 
      z-index: 1000;
 }
+
+.v-navigation-drawer { 
+    scrollbar-color: white #f0f0f0;
+    overflow-y: auto !important
+}
+
 </style>
