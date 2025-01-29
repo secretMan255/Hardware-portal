@@ -1,0 +1,3 @@
+total charge amount = selling price - seller sponsored voucher + shipping fee paid by buyer + shipping fee SST paid by seller + shopee item rebate
+
+transaction fee = total charge amount * 3.78%
