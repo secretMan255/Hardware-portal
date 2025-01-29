@@ -194,4 +194,12 @@ export class CallApi {
       throw err;
     }
   }
+
+  public static async getMainProduct() {
+    try {
+      return await AxiosClient.getInstance().get("/products/main");
+    } catch (err) {
+      throw err;
+    }
+  }
 }

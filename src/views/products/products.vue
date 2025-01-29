@@ -123,7 +123,7 @@
                     >
                          <v-sheet class="pa-4">
                               <v-sheet
-                                   :elevation="elevation"
+                                   elevation="10"
                                    class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
                                    height="300"
                                    @click= navigateToProduct(product)
@@ -193,6 +193,12 @@ import Footer from '../footer/footer.vue'
 import { EventBus } from '../../utils/utils';
 
 export default {
+     props: {
+          id: {
+               type: [String, Number],
+               required: true
+          }
+     },
      data() {
           return {
                products: [],
@@ -203,7 +209,6 @@ export default {
                selectedItem: null,
                searchItem: '',
                activeItem: 0,
-               elevation: 10,
                drawer: false,
                windowWidth: window.innerWidth
           }
@@ -256,6 +261,20 @@ export default {
                     this.products = productList.data
                     this.showList = productList.data
                     this.items = itemList.data
+
+                    if (this.id) {
+                         const showItem = this.showList.find((item) => item.id == this.id)
+                         
+                         if (showItem) {
+                              this.showList = [showItem]
+                              this.bread = this.getBreadcrumbTrail(showItem)
+                              this.navigateToProduct(showItem)
+
+                              this.$nextTick(() => {
+                                   window.scrollTo({ top: 0, behavior: "smooth" });
+                              });
+                         }
+                    }
                } catch(err) {
                     this.clearData()
                }
@@ -372,7 +391,6 @@ export default {
                const result = this.items.filter((item) =>  
                     item.name.toLowerCase().includes(search)
                )
-               
                if (result.length > 0) {
                     this.showList = result
                     this.bread = ['Search Result']

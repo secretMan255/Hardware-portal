@@ -16,14 +16,10 @@ const routes = [
     component: aboutUs,
   },
   {
-    path: "/product",
+    path: "/product/:id?",
     name: "Product",
     component: products,
-  },
-  {
-    path: "/contactUs",
-    name: "Contact Us",
-    component: contact,
+    props: true,
   },
 ];
 
