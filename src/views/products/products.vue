@@ -177,8 +177,11 @@
                               </v-col>
                          </v-row>
                     </v-card-text>
-                    <v-btn @click="addToCart">
+                    <v-btn v-if="selectedItem.qty > 0" @click="addToCart">
                          ADD TO CART
+                    </v-btn>
+                    <v-btn v-if="selectedItem.qty <= 0" disabled>
+                         OUT OF STOCK
                     </v-btn>
                </v-card>
           </v-dialog>
