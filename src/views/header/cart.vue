@@ -212,6 +212,10 @@ export default {
                     this.loginStatus = true
                } 
 
+               if (!this.user) {
+                    return
+               }
+
                try {
                     const getItem = await CallApi.getCart(this.user)
                     
