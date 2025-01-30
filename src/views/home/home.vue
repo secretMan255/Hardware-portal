@@ -70,6 +70,7 @@ export default {
                     { image: 'https://storage.googleapis.com/veryhardware/slide1.jpeg' },
                     { image: 'https://storage.googleapis.com/veryhardware/slide2.jpeg' },
                     { image: 'https://storage.googleapis.com/veryhardware/slide3.jpeg' },
+                    { image: 'https://storage.googleapis.com/veryhardware/slide4.jpeg' },
                ],
                mainProduct: {}
           }
