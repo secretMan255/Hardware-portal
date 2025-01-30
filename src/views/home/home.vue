@@ -1,9 +1,8 @@
 <template>
-     <v-carousel
-          height="700px" 
-          show-arrows="hover"
+     <v-carousel 
+          :height="carouselHeight" 
+          :show-arrows="hover"
           hide-delimiter-background
-          interval="6000"
           cycle
      >
           <template v-slot:prev="{ props }">
@@ -22,12 +21,12 @@
                     icon="mdi-chevron-right"
                ></v-btn>
           </template>
-          <v-carousel-item v-for="(slide, i) in slides" :key="i">
-                    <v-img 
-                         :src="slide.image"
-                         cover
-                    ></v-img>
-          </v-carousel-item>
+          <v-carousel-item
+               v-for="(item,i) in slides"
+               :key="i"
+               :src="item.image"
+               cover
+          ></v-carousel-item>
      </v-carousel>
      <div class="text-center">
           <p class="font-weight-bold text-red text-h4 mb-5">Company Name</p>
@@ -72,7 +71,13 @@ export default {
                     { image: 'https://storage.googleapis.com/veryhardware/slide3.jpeg' },
                     { image: 'https://storage.googleapis.com/veryhardware/slide4.jpeg' },
                ],
-               mainProduct: {}
+               mainProduct: {},
+               windowWidth: window.innerWidth,
+          }
+     },
+     computed: {
+          carouselHeight() {
+               return this.windowWidth < 768 ? '300px' : '600px'
           }
      },
      methods: {
@@ -87,9 +92,16 @@ export default {
           getProductImage(productName) {
                return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
           },
+          updateWindowWidth() {
+               this.windowWidth = window.innerWidth;
+          }
      },
-     async mounted() {
-          await this.getMainProduct()
+     mounted() {
+          window.addEventListener('resize', this.updateWindowWidth)
+          this.getMainProduct();
+     },
+     beforeUnmount() {
+          window.removeEventListener('resize', this.updateWindowWidth)
      }
 }
 </script>

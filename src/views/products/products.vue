@@ -133,7 +133,7 @@
                                              :aspect-ratio="1"
                                              class="bg-white"
                                              :src="getProductImage(product.name)"
-                                             width="250"
+                                             width="200"
                                         >
                                              <template v-slot:error>
                                                   <v-img
