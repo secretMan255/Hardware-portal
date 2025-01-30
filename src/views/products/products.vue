@@ -223,10 +223,9 @@ export default {
      },
      methods: {
           addToCart() {
-               if (this.selectedItem) {
+               const user = sessionStorage.getItem('user')
+               if (this.selectedItem && user) {
                     EventBus.emit('add-to-cart', this.selectedItem)
-               } else {
-                    console.log('No item seleted')
                }
           },
           toggleDrawer() {
