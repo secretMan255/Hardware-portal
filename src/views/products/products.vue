@@ -125,7 +125,7 @@
                               <v-sheet
                                    elevation="10"
                                    class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
-                                   height="300"
+                                   height="250"
                                    @click= navigateToProduct(product)
                               >
                                    <div> 
@@ -157,7 +157,22 @@
           >
                <v-card>
                     <v-card-title>{{ selectedItem?.name || 'No Item Selected' }}</v-card-title>
-                    <v-card-text>
+                    <v-card-text class="pt-0">
+                         <v-img
+                              :aspect-ratio="1"
+                              class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
+                              :src="getProductImage(selectedItem.name)"
+                              width="200"
+                         >
+                              <template v-slot:error>
+                                   <v-img
+                                        class="mx-auto"
+                                        height="300"
+                                        max-width="500"
+                                        src="../../assets/missingImage.jpeg"
+                                   ></v-img>
+                              </template>
+                         </v-img>
                          <v-row class="align-start mb-1" no-gutters>
                               <v-col cols="6">
                                    <div class="key">
@@ -177,8 +192,11 @@
                               </v-col>
                          </v-row>
                     </v-card-text>
-                    <v-btn v-if="selectedItem.qty > 0" @click="addToCart">
+                    <v-btn v-if="selectedItem.qty > 0 && isUserLogin" @click="addToCart">
                          ADD TO CART
+                    </v-btn>
+                    <v-btn v-if="!isUserLogin" disabled>
+                         PLEASE LOGIN
                     </v-btn>
                     <v-btn v-if="selectedItem.qty <= 0" disabled>
                          OUT OF STOCK
@@ -219,6 +237,11 @@ export default {
      computed: {
           isDesktop() {
                return this.windowWidth >= 1024
+          }, 
+          isUserLogin() {
+               const user = sessionStorage.getItem('user')
+
+               return user
           }
      },
      components: {
@@ -282,32 +305,38 @@ export default {
                }
           },
           navigateToProduct(product) {
-               if (!this.isDesktop) {
-                    this.falseDrawer()
-               }
+                    if (!this.isDesktop) {
+                         this.falseDrawer()
+                    }
+                    
+                    this.$nextTick(() => {
+                         window.scrollTo({ top: 0, behavior: "smooth" });
+                    });
 
-               this.activeItem = product.id
-               if (product === 0) {
-                    this.bread = ['ALL']
-                    this.activeItem = 0
-                    this.showList = this.products
-                    return
-               } 
+                    this.activeItem = product.id
+                    if (product === 0) {
+                         this.bread = ['ALL']
+                         this.activeItem = 0
+                         this.showList = this.products
+                         return
+                    } 
+                    
+                    const item = this.items.filter((item) => item.name === product.name)
 
-               const item = this.items.filter((item) => item.name === product.name)
+                    if (item.length > 0 ) {
+                         this.itemDialog = true
+                         this.selectedItem = item[0]
+                         if (typeof this.selectedItem.describe === 'string') {
+                              this.selectedItem.describe = JSON.parse(this.selectedItem.describe.trim());
+                         }
+                         return
+                    }
+                    
+                    this.bread = this.getBreadcrumbTrail(product)
 
-               if (item.length > 0 ) {
-                    this.itemDialog = true
-                    this.selectedItem = item[0]
-                    this.selectedItem.describe = JSON.parse(String(this.selectedItem.describe).trim())
-                    return
-               }
+                    const filteredItems = this.items.filter((item) => item.p_id === product.id)
 
-               this.bread = this.getBreadcrumbTrail(product)
-
-               const filteredItems = this.items.filter((item) => item.p_id === product.id)
-
-               this.showList = filteredItems.length > 0 ? filteredItems : product.children || []  
+                    this.showList = filteredItems.length > 0 ? filteredItems : product.children || []  
           },
           getBreadcrumbTrail(product) {
                const trail = []
@@ -455,9 +484,10 @@ export default {
 
 .drawer-toggle-btn {
      position: fixed; 
-     top: 50%; 
+     top: 55%; 
      transform: translateY(-50%); 
      z-index: 1000;
+     margin-left: -8px;
 }
 
 .v-navigation-drawer { 
