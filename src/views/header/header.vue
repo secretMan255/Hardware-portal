@@ -3,9 +3,9 @@
     <div class="app-bar-content">
       <p class="company-name" @click="navigationTo('/')">Company Name</p>
       <div class="nav-links-container">
-        <p class="nav-link" @click="navigationTo('/')">HOME</p>
-        <p class="nav-link" @click="navigationTo('/about')">ABOUT US</p>
-        <p class="nav-link" @click="navigationTo('/product')">PRODUCT</p>
+        <span class="nav-link" @click="navigationTo('/')">HOME</span>
+        <span class="nav-link" @click="navigationTo('/about')">ABOUT US</span>
+        <span class="nav-link" @click="navigationTo('/product')">PRODUCT</span>
       </div>
     </div>
     <div class="profile-card">
@@ -29,6 +29,7 @@ function navigationTo(where) {
 
 <style>
 .app-bar-content {
+  margin-top: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,8 +63,7 @@ function navigationTo(where) {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 @media (max-width: 600px) {
@@ -79,6 +79,7 @@ function navigationTo(where) {
 
   .nav-links-container {
     justify-content: center;
+    gap: 15px;
   }
 
   .profile-card {
