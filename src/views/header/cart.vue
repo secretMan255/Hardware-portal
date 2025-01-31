@@ -18,6 +18,7 @@
                                    <v-img :aspect-ratio="1" max-height="50" max-width="100" :src="getProductImage(item.name)"></v-img> 
                                         <div class="d-flex flex-column"> 
                                              <span class="text-subtitle-1">{{ item.name }}</span> 
+                                             <span class="text-grey">RM {{ item.price }}</span>
                                              <span class="text-grey"> Stock remain: {{ item.stock_remain }} </span>
                                         </div>
                                         <v-icon @click.stop="minusItem(item.name)" >mdi-minus</v-icon>
@@ -201,7 +202,7 @@ export default {
 
                try {
                     const res = await CallApi.addItemToCart(data)
-
+                    
                     if (res.ret == 0) {
                          if (res.data?.[0]?.msg) {
                               this.snackbar = true
@@ -287,7 +288,21 @@ export default {
                     recaptchaToken: await executeRecaptcha('email_login')
                }
 
-               const res = await CallApi.checkout(data)
+               const res = await CallApi.checkoutPending(data)
+
+               if (res.status === true) {
+                    // call payment getway
+                    // if paid
+                    // 
+
+                    // if paid failed or cancel
+                    // 
+               } else {
+                    this.snackbar = true
+                    this.snackBarMsg = `Some item are out of stock, please refresh the page.`
+               }
+
+               console.log('res: ' , res)
           }
      },
      mounted() {
