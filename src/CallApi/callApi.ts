@@ -43,6 +43,11 @@ type CreateAccountOTP = {
   recaptchaToken: string;
 };
 
+type CheckoutType = {
+  userId: number;
+  recaptchaToken: string;
+};
+
 export class CallApi {
   private static Instance: CallApi;
 
@@ -198,6 +203,14 @@ export class CallApi {
   public static async getMainProduct() {
     try {
       return await AxiosClient.getInstance().get("/products/main");
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async checkout(data: CheckoutType) {
+    try {
+      return await AxiosClient.getInstance().post(`/checkout`, data);
     } catch (err) {
       throw err;
     }
