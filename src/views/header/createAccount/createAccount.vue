@@ -198,7 +198,7 @@ export default {
                try {
                     const sendOtpPayload = {
                          email: this.createAccount.email,
-                         recaptchaToken: await executeRecaptcha('email_login')
+                         recaptchaToken: await executeRecaptcha('create_account_otp')
                     }
                     
                     this.otpLoading = true
@@ -235,7 +235,7 @@ export default {
           async createUser() {
                try {
                     this.registerLoading = true
-                    this.createAccount.recaptchaToken = await executeRecaptcha('email_login')
+                    this.createAccount.recaptchaToken = await executeRecaptcha('create_user')
                     const res = await CallApi.createAccount(this.createAccount)
 
                     if (res?.data) {

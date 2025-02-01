@@ -296,7 +296,7 @@ export default {
                          sub: userData.sub,
                          name: userData.name,
                          email: userData.email,
-                         recaptchaToken: await executeRecaptcha('email_login')
+                         recaptchaToken: await executeRecaptcha('google_login')
                     }
 
                     const res = await CallApi.userLogin(userCredential)
@@ -390,7 +390,7 @@ export default {
 
                     const sendOtpPayload = {
                          email: this.resetPasswordParam.email,
-                         recaptchaToken: await executeRecaptcha('email_login')
+                         recaptchaToken: await executeRecaptcha('send_otp')
                     }
 
                     const sendOTP = await CallApi.sendResetPasswordOTP(sendOtpPayload)
@@ -433,7 +433,7 @@ export default {
                          email: this.resetPasswordParam.email,
                          password: this.resetPasswordParam.password,
                          otp: this.resetPasswordParam.otp,
-                         recaptchaToken: await executeRecaptcha('email_login')
+                         recaptchaToken: await executeRecaptcha('update_password')
                     }
 
                     const updatePassword = await CallApi.updatePassword(updatePassPayload)

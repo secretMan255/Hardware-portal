@@ -168,7 +168,7 @@ export default {
 
                     const editAccountPayload = {
                          ... this.editAccount,
-                         recaptchaToken: await executeRecaptcha('email_login')
+                         recaptchaToken: await executeRecaptcha('edit_infor')
                     }
 
                     const res = await CallApi.editAccount(editAccountPayload)
