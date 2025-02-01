@@ -208,9 +208,17 @@ export class CallApi {
     }
   }
 
-  public static async checkout(data: CheckoutType) {
+  public static async checkoutPending(data: CheckoutType) {
     try {
-      return await AxiosClient.getInstance().post(`/checkout`, data);
+      return await AxiosClient.getInstance().post(`/checkout/pending`, data);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public static async deleteCheckout(data: CheckoutType) {
+    try {
+      return await AxiosClient.getInstance().post("/checkout/delete", data);
     } catch (err) {
       throw err;
     }
