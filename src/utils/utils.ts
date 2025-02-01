@@ -42,29 +42,6 @@ export function loadRecaptcha(): Promise<void> {
   });
 }
 
-export async function loadGoogleMap() {
-  return new Promise<void>((resolve, reject) => {
-    const siteKey = import.meta.env.VITE_MAP_KEY;
-
-    if (!siteKey) {
-      reject(new Error("reCAPTCHA site key is missing"));
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = "google-maps-script";
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${siteKey}`;
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => resolve();
-    script.onerror = (err) =>
-      reject(new Error("Failed to load Google Maps script."));
-
-    document.head.appendChild(script);
-  });
-}
-
 export const executeRecaptcha = async (action: string): Promise<string> => {
   if (typeof grecaptcha === "undefined") {
     throw new Error("reCAPTCHA is not loaded");
