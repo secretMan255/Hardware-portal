@@ -1,5 +1,5 @@
 <template>
-     <a href="https://wa.me/60172223915" target="_blank" rel="noopener noreferrer">
+     <a href="https://wa.me/60172223195" target="_blank" rel="noopener noreferrer">
           <v-icon size="50" icon="mdi-whatsapp" class="whatsapp-position"></v-icon>
      </a>
 </template>
@@ -8,10 +8,6 @@
 </script>
 
 <style>
-.avatar {
-     
-}
-
 .whatsapp-position {
      position: fixed; 
      bottom: 100px; 

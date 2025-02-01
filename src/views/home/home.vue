@@ -29,33 +29,38 @@
      </v-carousel>
      <div class="text-center">
           <p class="font-weight-bold text-red text-h4 mb-5">Company Name</p>
-          <p>asdadads</p>
+          <p class='introduce'>Our company provides high-quality and low-priced products, such as: power tools, pipes, bathroom accessories, etc. If you want to know more discounts or have other needs, please be sure to contact us.</p>
      </div>
-     <div class="mt-10 mb-5 text-center">
-          <p class="font-weight-bold text-red text-h4">Product Category</p>
-          <v-row class="g-5 mb-10">
-               <v-col 
-                    v-for="(product, i) in mainProduct" :key="i"
-                    cols="12"
-                    sm="6" 
-                    md="4" 
-                    lg="3" 
-                    class="pa-3 mb-10 mt-10"
-               >
-                    <v-sheet
-                         elevation="10"
-                         class="pa-4 mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
-                         height="200"
-                         @click="$router.push({ name: 'Product', params: { id: product.id } })"
+     <v-card class="mt-10 mb-5 text-center">
+          <v-container>
+               <p class="font-weight-bold text-red text-h4">Product Category</p>
+               <v-row class="g-5 mb-10">
+                    <v-col 
+                         v-for="(product, i) in mainProduct" :key="i"
+                         cols="12"
+                         sm="6" 
+                         md="4" 
+                         lg="3" 
+                         class="pa-3 mb-10 mt-10"
                     >
-                         <v-img
-                              :src="getProductImage(product.name)"
-                         ></v-img>
-                    </v-sheet>
-                    <div class="text-subtitle-2 text-center">{{ product.name }}</div>
-               </v-col>
-          </v-row>
-     </div>
+                         <v-sheet
+                              elevation="10"
+                              class="pa-4 mx-auto d-flex justify-center cursor-pointer img-container rounded-lg mr-0"
+                              height="200"
+                              @click="$router.push({ name: 'Product', params: { id: product.id } })"
+                         >
+                              <v-img
+                                   :aspect-ratio="1"
+                                   class="bg-white"
+                                   width="200"
+                                   :src="getProductImage(product.name)"
+                              ></v-img>
+                         </v-sheet>
+                         <div class="text-subtitle-2 text-center">{{ product.name }}</div>
+                    </v-col>
+               </v-row>
+          </v-container>
+     </v-card>
 </template>
 
 <script>
@@ -106,12 +111,19 @@ export default {
 </script>
 
 <style>
+.layout-card {
+     min-height: 100px;
+}
+
 .text-center {
      text-align: center;
      margin-top: 10px;
 }
 
-.img-container {
-     overflow: hidden;
+.introduce {
+     margin-bottom: 15px;
+     line-height: 1.2;
+     font-family: Arial, sans-serif;
+     font-weight: bold
 }
 </style>

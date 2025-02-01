@@ -4,6 +4,8 @@
                <v-col class="right-border" cols="12" md="6">
                     <p class="subTitle">NEWSLETTER</p>
                     <p class="hrefText" @click="subscribe()">Subscribe to our newsletter</p>
+                    <p class="subTitle mt-5">ADDRESS</p>
+                    <p class="subTitle">Lot 21, Jalan Besar, Kawasan Perusahaan, 43300 Seri Kembangan, Selangor, Malaysia</p>
                </v-col>
                <v-col cols="12" md="6">
                     <p class="subTitle">CONTACT US</p>
