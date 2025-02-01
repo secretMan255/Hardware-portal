@@ -56,7 +56,7 @@
 
 <script>
 import { CallApi } from '@/CallApi/callApi';
-import { loadGoogleMap } from '@/utils/utils';
+import { Loader } from '@googlemaps/js-api-loader';
 
 export default {
      data() {
@@ -64,8 +64,6 @@ export default {
                imageUrl: null,
                isUploading: false,
                image: null,
-               map: null,
-               marker: null,
                location: { lat: 3.019596625302822, lng: 101.7042589067457 }
           }
      }, 
@@ -111,27 +109,31 @@ export default {
                reader.readAsDataURL(file)
                })
           },
-          initMap() {
-               this.map = new google.maps.Map(document.getElementById("map"), { 
-                    center: this.location,
-                    zoom: 100,
+          async initMap() {
+               const loader = new Loader({
+                    apiKey: import.meta.env.VITE_MAP_KEY,
+                    version: "weekly",
                })
-               this.addMarker()
+
+               loader.load().then(async () => {
+                    const { Map } = await google.maps.importLibrary("maps")
+                    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker")
+
+                    const map = new Map(document.getElementById("map"), {
+                         center: this.location,
+                         zoom: 14,
+                         mapId: "4504f8b37365c3d0"
+                    })
+
+                    const marker = new AdvancedMarkerElement({
+                         map,
+                         position: this.location
+                    })
+               })
           },
-          addMarker() {
-               this.marker = new google.maps.Marker({
-                    position: this.location,
-                    map: this.map,
-               })
-          }
      },
      async mounted() {
-          try {
-               await loadGoogleMap();
-               this.initMap();
-          } catch (error) {
-               console.error("Google Maps API failed to load:", error.message)
-          }
+               this.initMap()
           },
      }
 </script>
