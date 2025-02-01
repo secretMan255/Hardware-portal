@@ -1,30 +1,94 @@
 <template>
   <v-app-bar app dense>
+    <v-btn
+      icon
+      v-show="isMobile"
+      @click="toggleDrawer"
+      class="menu-button"
+    >
+        <v-icon>mdi-menu</v-icon>
+    </v-btn>
     <div class="app-bar-content">
       <p class="company-name" @click="navigationTo('/')">Company Name</p>
-      <div class="nav-links-container">
+      <div class="nav-links-container" v-show="!isMobile">
         <span class="nav-link" @click="navigationTo('/')">HOME</span>
         <span class="nav-link" @click="navigationTo('/about')">ABOUT US</span>
         <span class="nav-link" @click="navigationTo('/product')">PRODUCT</span>
       </div>
+      
     </div>
     <div class="profile-card">
-      <profile></profile> 
+      <profile></profile>
       <cart></cart>
     </div>
   </v-app-bar>
+
+  <v-navigation-drawer
+    v-model="drawer"
+    app
+    temporary
+    right
+    class="mobile-drawer"
+  >
+    <v-list>
+      <v-list-item
+        link
+        @click="navigationTo('/')"
+      >
+        <span class="drawer-font">HOME</span>
+      </v-list-item>
+      <v-list-item
+        link
+        @click="navigationTo('/about')"
+      >
+        <span class="drawer-font">ABOUT US</span>
+      </v-list-item>
+      <v-list-item
+        link
+        @click="navigationTo('/product')"
+      >
+      <span class="drawer-font">PRODUCT</span>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script setup>
-import { useRouter} from 'vue-router'
-import cart from './cart.vue';
+import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import cart from './cart.vue'
 import profile from './profile.vue'
 
 const router = useRouter()
+const isMobile = ref(false)
+const drawer = ref(false)
 
 function navigationTo(where) {
-     router.push(where)
+  router.push(where)
+  drawer.value = false
 }
+
+function toggleDrawer() {
+  drawer.value = !drawer.value
+}
+
+function checkMobileView() {
+  const wasMobile = isMobile.value
+  isMobile.value = window.innerWidth <= 600
+
+  if (!isMobile.value && wasMobile) {
+    drawer.value = false
+  }
+}
+
+onMounted(() => {
+  checkMobileView()
+  window.addEventListener('resize', checkMobileView)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobileView)
+})
 </script>
 
 <style>
@@ -59,6 +123,11 @@ function navigationTo(where) {
   color: #5c5c5c;
 }
 
+.drawer-font {
+  font-weight: bold;
+  color: black;
+}
+
 .profile-card {
   display: flex;
   align-items: center;
@@ -66,24 +135,21 @@ function navigationTo(where) {
   margin-right: 20px;
 }
 
+.menu-button {
+  margin-right: 10px;
+}
+
+.mobile-drawer {
+  z-index: 3000;
+}
+
 @media (max-width: 600px) {
-  .app-bar-content {
-    display: inline;
-    flex-direction: column;
-    align-items: center; 
-  }
-
-  .company-name {
-    text-align: center;
-  }
-
   .nav-links-container {
-    justify-content: center;
-    gap: 15px;
+    display: none;
   }
 
-  .profile-card {
-    justify-content: center;
+  .menu-button {
+    display: block;
   }
 }
 </style>
