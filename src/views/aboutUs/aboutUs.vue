@@ -33,14 +33,14 @@
                          <div class="about-us-container">
                               <p class="font-weight-bold text-h5 text-red">OUR GOALS</p>
                               <div class="b-color mb-10 d-flex">
-                                   <p><v-icon class="icon">mdi-chevron-right</v-icon> Provide excellent service and cheap source to related industries </p>
+                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon> Provide excellent service and cheap source to related industries </p>
                               </div>
                               <div class="b-color mb-10 d-flex">
                                    
-                                   <p><v-icon class="icon">mdi-chevron-right</v-icon>Reliable & efficient customer service</p>
+                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon>Reliable & efficient customer service</p>
                               </div>
                               <div class="b-color d-flex">
-                                   <p><v-icon class="icon">mdi-chevron-right</v-icon>Fulfill customer’s need</p>
+                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon>Fulfill customer’s need</p>
                               </div>
                          </div>
                     </v-col>

@@ -6,16 +6,16 @@
       @click="toggleDrawer"
       class="menu-button"
     >
-        <v-icon>mdi-menu</v-icon>
+      <v-icon>mdi-menu</v-icon>
     </v-btn>
+    
     <div class="app-bar-content">
-      <p class="company-name" @click="navigationTo('/')">Company Name</p>
-      <div class="nav-links-container" v-show="!isMobile">
+      <p class="agdasima-bold" @click="navigationTo('/')">WINGMAN</p>
+      <div class="nav-links-container mt-1" v-show="!isMobile">
         <span class="nav-link" @click="navigationTo('/')">HOME</span>
         <span class="nav-link" @click="navigationTo('/about')">ABOUT US</span>
         <span class="nav-link" @click="navigationTo('/product')">PRODUCT</span>
       </div>
-      
     </div>
     <div class="profile-card">
       <profile></profile>
@@ -91,9 +91,15 @@ onUnmounted(() => {
 })
 </script>
 
-<style>
+<style scoped>
+.agdasima-bold {
+  font-family: "Agdasima", serif;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 25px;
+}
+
 .app-bar-content {
-  margin-top: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,6 +109,8 @@ onUnmounted(() => {
 
 .company-name {
   cursor: pointer;
+  font-weight: bold;
+  font-size: 25px;
 }
 
 .nav-links-container {

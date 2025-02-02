@@ -1,5 +1,5 @@
 <template>
-     <v-card border class="d-flex flex-column justify-space-evenly pa-3" >
+     <v-card border class="d-flex flex-column justify-space-evenly pa-3 pb-0" >
           <v-row class="mb-2 mt-1">
                <v-col class="right-border" cols="12" md="6">
                     <p class="subTitle">NEWSLETTER</p>
@@ -34,8 +34,8 @@
                     </ul>
                </v-col>
           </v-row>
-          <div class="top-border">
-               <p class="text-center">© {{ new Date().getFullYear() }} Company Name</p>
+          <div class="top-border text-center">
+               <span>© {{ new Date().getFullYear() }}</span> <span class="agdasima-bold">WINGMAN</span> 
           </div>
      </v-card>
 
@@ -149,7 +149,14 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.agdasima-bold {
+  font-family: "Agdasima", serif;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 17px;
+}
+
 .top-border {
      border-top: 1px solid black;
 }

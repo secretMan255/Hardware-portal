@@ -28,10 +28,11 @@
           ></v-carousel-item>
      </v-carousel>
      <div class="text-center">
-          <p class="font-weight-bold text-red text-h4 mb-5">Company Name</p>
-          <p class='introduce'>Our company provides high-quality and low-priced products, such as: power tools, pipes, bathroom accessories, etc. If you want to know more discounts or have other needs, please be sure to contact us.</p>
+          <p class="font-weight-bold text-red text-h4 mb-5">What We Provide</p>
+          <p class='introduce'>Our company provides high-quality and low-priced products, such as: power tools, pipes, bathroom accessories, etc.</p>
+          <p class='introduce'>If you want to know more discounts or have other needs, please be sure to contact us.</p>
      </div>
-     <v-card class="mt-10 mb-5 text-center">
+     <v-card class="mt-10 text-center mb-0">
           <v-container>
                <p class="font-weight-bold text-red text-h4">Product Category</p>
                <v-row class="g-5 mb-10">
@@ -112,7 +113,7 @@ export default {
 
 <style>
 .layout-card {
-     min-height: 100px;
+     min-height: 1500px;
 }
 
 .text-center {
