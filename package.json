@@ -12,6 +12,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@mdi/font": "7.4.47",
     "axios": "^1.7.9",
     "core-js": "^3.37.1",
