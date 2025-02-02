@@ -48,7 +48,18 @@ export const executeRecaptcha = async (action: string): Promise<string> => {
   }
 
   const siteKey = import.meta.env.VITE_SITE_KEY;
-  return await grecaptcha.execute(siteKey, { action });
+  return new Promise((resolve, reject) => {
+    grecaptcha.ready(() => {
+      grecaptcha
+        .execute(siteKey, { action })
+        .then((token) => {
+          resolve(token);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  });
 };
 
 export function emailValidate(email: string) {
@@ -87,3 +98,13 @@ export function validatePostcode(postcode: string) {
 }
 
 export const EventBus = mitt();
+
+export function priceDecimal(price: number, currency?: string) {
+  return (
+    `${currency || ""} ` +
+    price.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
