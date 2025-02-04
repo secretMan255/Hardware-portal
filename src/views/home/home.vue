@@ -87,8 +87,9 @@ export default {
      },
      methods: {
           async getMainProduct(){
+               window.scrollTo({ top: 0, behavior: "smooth" })
                const getMainProduct = await CallApi.getMainProduct()
-
+            
                if (getMainProduct.ret != 0) {
                     return 
                }

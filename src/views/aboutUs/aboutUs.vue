@@ -110,6 +110,7 @@ export default {
                })
           },
           async initMap() {
+               window.scrollTo({ top: 0, behavior: "smooth" })
                const loader = new Loader({
                     apiKey: import.meta.env.VITE_MAP_KEY,
                     version: "weekly",

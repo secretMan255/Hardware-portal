@@ -10,7 +10,7 @@
 <style>
 .whatsapp-position {
      position: fixed; 
-     bottom: 100px; 
+     bottom: 20px; 
      right: 10px; 
      z-index: 1; 
      color: green;

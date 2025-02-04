@@ -18,9 +18,9 @@
       </div>
     </div>
     <div class="profile-card">
-      <profile></profile>
-      <cart></cart>
-    </div>
+      <!-- <profile></profile>
+      <cart></cart>-->
+    </div> 
   </v-app-bar>
 
   <v-navigation-drawer
@@ -56,8 +56,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
-import cart from './cart.vue'
-import profile from './profile.vue'
+// import cart from './cart.vue'
+// import profile from './profile.vue'
 
 const router = useRouter()
 const isMobile = ref(false)
@@ -140,7 +140,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-right: 20px;
+  margin-right: 43px;
 }
 
 .menu-button {
