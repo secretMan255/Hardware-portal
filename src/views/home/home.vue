@@ -23,7 +23,7 @@
           <v-carousel-item
                v-for="(item,i) in slides"
                :key="i"
-               :src="item.image"
+               :src="getProductImage(item.image)"
                cover
           ></v-carousel-item>
      </v-carousel>
@@ -44,20 +44,26 @@
                          lg="3" 
                          class="pa-3 mb-10 mt-10"
                     >
-                         <v-sheet
-                              elevation="10"
-                              class="pa-4 mx-auto d-flex justify-center cursor-pointer img-container rounded-lg mr-0"
-                              height="200"
-                              @click="$router.push({ name: 'Product', params: { id: product.id } })"
-                         >
-                              <v-img
-                                   :aspect-ratio="1"
-                                   class="bg-white"
-                                   width="200"
-                                   :src="getProductImage(product.name)"
-                              ></v-img>
+                         <v-sheet>
+                              <v-sheet
+                                   elevation="10"
+                                   class="pa-4 mx-auto d-flex justify-center cursor-pointer img-container rounded-lg mr-0"
+                                   height="250"
+                                   width="330"
+                                   @click="$router.push({ name: 'Product', params: { id: product.id } })"
+                              >
+                                   <div class="pb-5 mb-2"> 
+                                        <v-img
+                                             :aspect-ratio="1"
+                                             class="bg-white"
+                                             width="200"
+                                             :src="getProductImage(product.name)"
+                                        ></v-img>
+                                        <p class="text-subtitle-2 text-center">{{ product.name }}</p>
+                                   </div>
+                              </v-sheet>
+                              
                          </v-sheet>
-                         <div class="text-subtitle-2 text-center">{{ product.name }}</div>
                     </v-col>
                </v-row>
           </v-container>
@@ -66,15 +72,16 @@
 
 <script>
 import { CallApi } from '../../CallApi/callApi';
+import { getProductImage } from '../../utils/utils'
 
 export default {
      data () {
           return {
                slides: [
-                    { image: 'https://storage.googleapis.com/veryhardware/slide1.jpeg' },
-                    { image: 'https://storage.googleapis.com/veryhardware/slide2.jpeg' },
-                    { image: 'https://storage.googleapis.com/veryhardware/slide3.jpeg' },
-                    { image: 'https://storage.googleapis.com/veryhardware/slide4.jpeg' },
+                    { image: 'slide1' },
+                    { image: 'slide2' },
+                    { image: 'slide3.' },
+                    { image: 'slide4' },
                ],
                mainProduct: {},
                windowWidth: window.innerWidth,
@@ -86,6 +93,7 @@ export default {
           }
      },
      methods: {
+          getProductImage,
           async getMainProduct(){
                window.scrollTo({ top: 0, behavior: "smooth" })
                const getMainProduct = await CallApi.getMainProduct()
@@ -94,9 +102,6 @@ export default {
                     return 
                }
                this.mainProduct = getMainProduct.data
-          },
-          getProductImage(productName) {
-               return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
           },
           updateWindowWidth() {
                this.windowWidth = window.innerWidth;
@@ -112,7 +117,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .layout-card {
      min-height: 1500px;
 }
@@ -127,5 +132,13 @@ export default {
      line-height: 1.2;
      font-family: Arial, sans-serif;
      font-weight: bold
+}
+
+.cursor-pointer {
+     cursor: pointer;
+}
+
+.img-container {
+     overflow: hidden;
 }
 </style>
