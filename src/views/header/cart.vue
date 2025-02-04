@@ -104,7 +104,7 @@
 <script>
 import { CallApi } from '../../CallApi/callApi';
 import { EventBus } from '../../utils/utils'
-import { executeRecaptcha, priceDecimal } from '../../utils/utils'
+import { executeRecaptcha, priceDecimal, getProductImage } from '../../utils/utils'
 import CheckOut from '../checkout/cehckout.vue'
 
 export default {
@@ -130,6 +130,7 @@ export default {
           }
      },
      methods: {
+          getProductImage,
           priceDecimal,
           async minusItem(itemName){
                const itemIndex = this.cart.findIndex(cartItem => cartItem.name === itemName)
@@ -221,9 +222,9 @@ export default {
                     }
                }
           },
-          getProductImage(productName) {
-               return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
-          },
+          // getProductImage(productName) {
+          //      return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
+          // },
           async addItemToCart(item) {
                const data = {
                     userId: Number(this.user),
