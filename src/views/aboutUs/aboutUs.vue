@@ -31,17 +31,18 @@
                     </v-col>
                     <v-col cols="12" sm="6">
                          <div class="about-us-container">
-                              <p class="font-weight-bold text-h5 text-red">OUR GOALS</p>
-                              <div class="b-color mb-10 d-flex">
-                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon> Provide excellent service and cheap source to related industries </p>
-                              </div>
-                              <div class="b-color mb-10 d-flex">
-                                   
-                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon>Reliable & efficient customer service</p>
-                              </div>
-                              <div class="b-color d-flex">
-                                   <p><v-icon class="icon mb-1">mdi-chevron-right</v-icon>Fulfill customer’s need</p>
-                              </div>
+                              <v-list class="product-describe" density="compact">
+                                   <v-list-subheader class="font-weight-bold text-h5 text-red">OUR GOALS</v-list-subheader>
+                                   <v-list-item
+                                        v-for="(text, index) in outGoal"
+                                        :key="index"
+                                   >
+                                             <template v-slot:prepend>
+                                                  <v-icon icon="mdi-circle-small"></v-icon>
+                                             </template>
+                                             <v-list-item-title class="font-weight-bold">{{ text }}</v-list-item-title>
+                                   </v-list-item>
+                              </v-list>
                          </div>
                     </v-col>
                </v-row>
@@ -64,7 +65,8 @@ export default {
                imageUrl: null,
                isUploading: false,
                image: null,
-               location: { lat: 3.019596625302822, lng: 101.7042589067457 }
+               location: { lat: 3.019596625302822, lng: 101.7042589067457 },
+               outGoal: ['Provide excellent service and cheap source to related industries', 'Reliable & efficient customer service', 'Fulfill customer’s need']
           }
      }, 
      methods: {
@@ -139,7 +141,7 @@ export default {
      }
 </script>
 
-<style>
+<style scoped>
 .location-container {
      width: 80%;
      display: flex;
@@ -182,5 +184,17 @@ export default {
 
 .icon{
      font-size: 20px;
+}
+
+.product-describe .v-list-item-title {
+  font-size: 14px; /* Adjust for mobile */
+  white-space: normal; /* Allow text wrapping */
+  word-wrap: break-word; /* Break long words if needed */
+}
+
+@media (max-width: 600px) {
+  .product-describe .v-list-item-title {
+    font-size: 12px; /* Smaller font for narrow screens */
+  }
 }
 </style>
