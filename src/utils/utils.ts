@@ -108,3 +108,20 @@ export function priceDecimal(price: number, currency?: string) {
     })
   );
 }
+
+export function parseProductDescribe(raw: string) {
+  const object = [];
+  const splitValues = raw.split(",");
+
+  for (let value of splitValues) {
+    object.push(value.replace(/^{|}$/g, "").trim().replace(/^"|"$/g, ""));
+  }
+
+  return object;
+}
+
+export function getProductImage(productName: string) {
+  return new URL(
+    `https://storage.googleapis.com/veryhardware/${productName}.jpeg`
+  ).href;
+}
