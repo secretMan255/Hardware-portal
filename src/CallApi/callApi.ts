@@ -85,12 +85,9 @@ export class CallApi {
     }
   }
 
-  public static async getImage(path: string, fileName: string) {
+  public static async getImage(id: number) {
     try {
-      return await AxiosClient.getInstance().get(
-        `/image?path=${path}&fileName=${fileName}`,
-        { responseType: "blob" }
-      );
+      return await AxiosClient.getInstance().get(`image/?id=${id}`);
     } catch (err) {
       throw err;
     }
