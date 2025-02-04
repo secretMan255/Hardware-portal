@@ -1,8 +1,12 @@
 <template>
-     <v-dialog :model-value="modelValue" @update:model-value="updateDialog" width="400">
-          <v-img
-               :src="this.imgUrl"
-          ></v-img>
+     <v-dialog :model-value="modelValue" @update:model-value="updateDialog" width="500">
+          <v-card>
+               <v-card-text>
+                    <v-img
+                         :src="this.imgUrl"
+                    ></v-img>
+               </v-card-text>
+          </v-card>
      </v-dialog>
 </template>
 

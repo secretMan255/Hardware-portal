@@ -13,7 +13,7 @@
           >
                {{ isUploading ? "Uploading..." : "Go Go Power Ranger" }}
           </v-btn> -->
-          <v-card class="location-container">
+          <v-card class="location-container pt-5 pb-5">
                <v-row>
                     <v-col cols="12" sm="6">
                          <div class="about-us-container">
@@ -150,7 +150,7 @@ export default {
      text-align: center;
      margin: 40px auto;
      border: 1px solid #bdbdbd5b;
-     border-radius: 8px; 
+     border-radius: 8px;
 }
 
 .map-container {
@@ -165,13 +165,11 @@ export default {
      width: 75%;
      margin: 0 auto;
      text-align: justify;
-     padding: 20px;
      font-family: Arial, sans-serif;
 }
 
 .about-us-container p {
      margin-bottom: 15px;
-     line-height: 1.2;
 }
 
 .b-color {
