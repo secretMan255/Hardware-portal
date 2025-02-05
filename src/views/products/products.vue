@@ -26,7 +26,7 @@
                >
                </v-list-item>
                
-               <template v-for="(product, index) in products" :key="`group=${product.id}`">
+               <template v-for="(product, index) in vuexProducts" :key="`group=${product.id}`">
                     <v-list-group
                          v-if="product.children.length > 0"
                          :prepend-icon="product.icon"
@@ -293,7 +293,7 @@
 </template>
 
 <script>
-import { CallApi } from '@/CallApi/callApi'
+import { mapState, mapActions } from 'vuex';
 import Footer from '../footer/footer.vue'
 import { EventBus, priceDecimal, parseProductDescribe, getProductImage } from '../../utils/utils';
 import ImageAmplifier from '../imageAmplifier/imageAmplifier.vue'
@@ -310,10 +310,10 @@ export default {
      data() {
           return {
                itemTableData: [],
-               products: [],
+               // products: [],
                showList: [],
-               items: [],
-               image: [],
+               // items: [],
+               // image: [],
                showImageList: [],
                bread: ['ALL'],
                productDescribe: [],
@@ -332,6 +332,7 @@ export default {
           }
      },
      computed: {
+          ...mapState({vuexProducts: 'products',vuexItems: 'items',vuexImages: 'images', }),
           isDesktop() {
                return this.windowWidth >= 1024
           }, 
@@ -350,6 +351,7 @@ export default {
           ImageAmplifier
      },
      methods: {
+          ...mapActions(['fetchProducts']),
           getProductImage,
           priceDecimal,
           parseProductDescribe,
@@ -384,27 +386,11 @@ export default {
                this.showList = []
                this.items = []
           },
-          // get products, items, image from api
-          async getProducts(){
+          async getProductsFromHomepage(){
                try {
                     this.$nextTick(() => {
                          window.scrollTo({ top: 0, behavior: "smooth" });
                     })
-                    const productList = await CallApi.getProductList(1)
-                    const itemList = await CallApi.getItemList()
-                    const imageList = await CallApi.getImage(0)
-                    
-                    if (productList.ret != 0 || !productList || itemList.ret != 0 || !itemList) {
-                         this.clearData()
-                         return
-                    } 
-                    
-
-                    this.products = productList.data
-                    this.showList = productList.data
-                    this.items = itemList.data
-                    this.image = imageList.data
-
                     // if user click the product from home page
                     if (this.id) {
                          const showItem = this.showList.find((item) => item.id == this.id)
@@ -438,21 +424,20 @@ export default {
                } 
                
                // get product describe
-               if(product.describe) {
-                    this.productDescribe = this.parseProductDescribe(JSON.stringify(product.describe))
-               } else {
-                    this.productDescribe = []
-               }
+               this.productDescribe = product.describe
+               ? this.parseProductDescribe(JSON.stringify(product.describe))
+               : []
 
                // clear search each naviagtion
                this.searchItem = ''
                this.loading = true
 
                // search item from parent 
-               const item = this.items.filter((item) => item.p_id === product.id)
-               this.showImageList = this.image
-               .filter((item) => item.id === product.id)
-               .map((item) => `${item.image}`)
+               const item = this.vuexItems.filter((item) => item.p_id === product.id)
+
+               this.showImageList = this.vuexImages
+                    .filter((item) => item.id === product.id)
+                    .map((item) => `${item.image}`)
                
                // generate bread
                this.bread = this.getBreadcrumbTrail(product)
@@ -473,13 +458,12 @@ export default {
                }
                this.loading = false
 
-               const filteredItems = this.items.filter((item) => item.p_id === product.id)
-
+               const filteredItems = this.vuexItems.filter((item) => item.p_id === product.id)
                this.showList = filteredItems.length > 0 ? filteredItems : product.children || []  
           },
           findProductParent(product){
                // find parent product from dataIterator component
-               this.products.forEach(element => {
+               this.vuexProducts.forEach(element => {
                     element.children.forEach(children => {
                          if (product.p_id === children.id) {
                               this.navigateToProduct(children)
@@ -516,7 +500,7 @@ export default {
                          };
 
                          // Find the parent of the current product
-                         const parent = findParent(this.products, currentProduct.p_id)
+                         const parent = findParent(this.vuexProducts, currentProduct.p_id)
                          if (parent) {
                               // Recursively process the parent's hierarchy
                               findParentHierarchy(parent)
@@ -559,7 +543,7 @@ export default {
                };
 
                // navigate to product else navigate to the child list p_id
-               const targetProduct = findProductByName(this.products, targetCrumbName)
+               const targetProduct = findProductByName(this.vuexProducts, targetCrumbName)
                if (targetProduct) {
                     this.bread = this.bread.slice(0, index + 1)
                     this.activeItem = targetProduct.id
@@ -571,7 +555,9 @@ export default {
                this.searchList = false
                this.searchItem = ''
                this.itemTableData = []
-               this.showList = this.products
+
+               // display all product
+               this.showList = this.vuexProducts
                this.activeItem = 0
                this.bread = ['ALL']
           },
@@ -592,7 +578,7 @@ export default {
                this.itemTableData = []
 
                const search = this.searchItem.toLowerCase()
-               const result = this.items.filter((item) =>  
+               const result = this.vuexItems.filter((item) =>  
                     item.name.toLowerCase().includes(search)
                )
 
@@ -611,9 +597,19 @@ export default {
           }
      },
      async mounted() {
-          await this.getProducts()
+          await this.getProductsFromHomepage()
+          
+          // get data from vuex store
+          await this.fetchProducts()
+          
+          // reset the product page to display all products initial
+          this,this.resetProductPage()
+          
+          // set drawer based on screen size
           this.updateWindowWidth()
           this.drawer = this.isDesktop
+          
+          // add a resize event listener
           window.addEventListener("resize", this.updateWindowWidth)
      },
      beforeMount() {

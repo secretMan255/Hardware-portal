@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { CallApi } from '../../CallApi/callApi';
+import { mapState, mapActions } from 'vuex'
 import { getProductImage } from '../../utils/utils'
 
 export default {
@@ -83,31 +83,30 @@ export default {
                     { image: 'slide3.' },
                     { image: 'slide4' },
                ],
-               mainProduct: {},
+               mainProduct: [],
                windowWidth: window.innerWidth,
           }
      },
      computed: {
+          ...mapState({vuexMainProducts: 'mainProduct' }),
           carouselHeight() {
                return this.windowWidth < 768 ? '300px' : '600px'
           }
      },
      methods: {
+          ...mapActions(['fetchHomePage']),
           getProductImage,
           async getMainProduct(){
                window.scrollTo({ top: 0, behavior: "smooth" })
-               const getMainProduct = await CallApi.getMainProduct()
-            
-               if (getMainProduct.ret != 0) {
-                    return 
-               }
-               this.mainProduct = getMainProduct.data
+               
+               this.mainProduct = this.vuexMainProducts
           },
           updateWindowWidth() {
                this.windowWidth = window.innerWidth;
           }
      },
-     mounted() {
+     async mounted() {
+          await this.fetchHomePage()
           window.addEventListener('resize', this.updateWindowWidth)
           this.getMainProduct();
      },
