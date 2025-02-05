@@ -109,15 +109,18 @@ export function priceDecimal(price: number, currency?: string) {
   );
 }
 
-export function parseProductDescribe(raw: string) {
-  const object = [];
-  const splitValues = raw.split(",");
+export function parseProductDescribe(raw: any) {
+  const cleaned = raw.replace(/^\{|\}$/g, "").replace(/\\/g, "");
 
-  for (let value of splitValues) {
-    object.push(value.replace(/^{|}$/g, "").trim().replace(/^"|"$/g, ""));
-  }
+  const splitValues = cleaned.split(",").map((value: any) =>
+    value
+      .trim() // Trim spaces
+      .replace(/^"|"$/g, "")
+      .replace(/^\{|\}$/g, "")
+      .replace('"', "")
+  );
 
-  return object;
+  return splitValues;
 }
 
 export function getProductImage(productName: string) {
