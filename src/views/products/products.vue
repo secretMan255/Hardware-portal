@@ -89,6 +89,8 @@
           class="drawer-toggle-btn"
      >
      </v-btn>
+
+     <!-- main content -->
      <v-card class="layout-card">
           <v-container>
                <v-text-field
@@ -97,9 +99,14 @@
                     clearable
                     prepend-inner-icon="mdi-search-web"
                     variant="outlined"
-                    @keydown.enter.prevent="searchItems" 
-                    @input="handleSearchInput"
-               ></v-text-field>
+                    @update:modelValue="handleSearchInput"
+                    density="compact"
+               >
+                    <template #append>
+                         <v-btn variant="plain" block @click="searchItems">SEARCH</v-btn>
+                    </template>
+               </v-text-field>   
+               <!-- breadcrumbs -->    
                <v-breadcrumbs class="pt-0">
                     <v-breadcrumbs-item
                          v-for="(crumb, index) in bread"
@@ -113,44 +120,55 @@
                </v-breadcrumbs>
                
                <!-- display products -->
-               <v-row class="g-5" v-if="0 == itemTableData.length">
-                    <v-col 
-                         v-for="(product, index) in showList"
-                         :key="index"
-                         cols="12"
-                         sm="6" 
-                         md="4" 
-                         lg="3" 
-                         class="pa-3"
-                    >
-                         <v-sheet class="pa-5">
-                              <v-sheet
-                                   elevation="10"
-                                   class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
-                                   height="265"
-                                   @click= navigateToProduct(product)
-                              >
-                                   <div class="pa-5"> 
-                                        <v-img
-                                             :aspect-ratio="1"
-                                             class="bg-white mb-5"
-                                             :src="getProductImage(product.img || product.name)"
-                                             width="200"
-                                        >
-                                             <template v-slot:error>
-                                                  <v-img
-                                                       class="mx-auto"
-                                                       height="300"
-                                                       max-width="500"
-                                                       src="../../assets/missingImage.jpeg"
-                                                  ></v-img>
-                                             </template>
-                                        </v-img>
-                                        <div class="text-subtitle-2 text-center">{{ product.name }}</div>
-                                   </div>
+               <v-row class="g-5" v-if="0 == itemTableData.length"> 
+                    <!-- search item -->
+                    <template v-if="searchList">
+                         <DataIterator
+                              :showList="showList"
+                              :products="products"
+                              @findProductParent="findProductParent"
+                         ></DataIterator>
+                    </template>
+                    <!-- display all product -->
+                    <template v-else>
+                         <v-col 
+                              v-for="(product, index) in showList"
+                              :key="index"
+                              cols="12"
+                              sm="6" 
+                              md="4" 
+                              lg="3" 
+                              class="pa-3"
+                         >
+                              <v-sheet class="pa-5">
+                                   <v-sheet
+                                        elevation="10"
+                                        class="mx-auto d-flex justify-center cursor-pointer img-container rounded-lg"
+                                        height="265"
+                                        @click= navigateToProduct(product)
+                                   >
+                                        <div class="pa-5"> 
+                                             <v-img
+                                                  :aspect-ratio="1"
+                                                  class="bg-white mb-5"
+                                                  :src="getProductImage(product.img || product.name)"
+                                                  width="200"
+                                             >
+                                                  <template v-slot:error>
+                                                       <v-img
+                                                            class="mx-auto"
+                                                            height="300"
+                                                            max-width="500"
+                                                            src="../../assets/missingImage.jpeg"
+                                                       ></v-img>
+                                                  </template>
+                                             </v-img>
+                                             <div class="text-subtitle-2 text-center">{{ product.name }}</div>
+                                        </div>
+                                   </v-sheet>
                               </v-sheet>
-                         </v-sheet>
-                    </v-col>
+                         </v-col>
+                    </template>
                </v-row>
                <!-- display items -->
                <v-row v-else>
@@ -252,7 +270,7 @@
                               </v-col>
                          </v-row>
                     </v-card-text>
-                    <v-btn v-if="selectedItem.qty > 0 && isUserLogin" @click="addToCart">
+                    <!-- <v-btn v-if="selectedItem.qty > 0 && isUserLogin" @click="addToCart">
                          ADD TO CART
                     </v-btn>
                     <v-btn v-if="!isUserLogin" disabled>
@@ -260,7 +278,7 @@
                     </v-btn>
                     <v-btn v-if="selectedItem.qty <= 0" disabled>
                          OUT OF STOCK
-                    </v-btn>
+                    </v-btn> -->
                </v-card>
           </v-dialog>
 
@@ -279,13 +297,15 @@ import { CallApi } from '@/CallApi/callApi'
 import Footer from '../footer/footer.vue'
 import { EventBus, priceDecimal, parseProductDescribe, getProductImage } from '../../utils/utils';
 import ImageAmplifier from '../imageAmplifier/imageAmplifier.vue'
+import DataIterator from '../dataIterator/dataIterator.vue';
 
 export default {
      props: {
+          // props from home page
           id: {
                type: [String, Number],
-               required: true
-          }
+               required: false
+          },
      },
      data() {
           return {
@@ -296,14 +316,15 @@ export default {
                image: [],
                showImageList: [],
                bread: ['ALL'],
+               productDescribe: [],
                itemDialog: false,
                ImageAmpDialog: false,
                loading: true,
-               selectedItem: null,
                drawer: false,
-               searchItem: '',
+               searchList: false,
+               selectedItem: null,
                imgUrl: '',
-               productDescribe: [],
+               searchItem: '',
                activeItem: 0,
                page: 1,
                itemsPerPage: 10,
@@ -314,16 +335,17 @@ export default {
           isDesktop() {
                return this.windowWidth >= 1024
           }, 
-          isUserLogin() {
-               const user = sessionStorage.getItem('user')
+          // isUserLogin() {
+          //      const user = sessionStorage.getItem('user')
 
-               return user
-          },
+          //      return user
+          // },
           pageCount () {
                return Math.ceil(this.itemTableData.length / this.itemsPerPage)
           },
      },
      components: {
+          DataIterator,
           Footer,
           ImageAmplifier
      },
@@ -333,14 +355,16 @@ export default {
           parseProductDescribe,
           openImageDialog(img) {
                this.ImageAmpDialog = true
-               this.imgUrl = `https://storage.googleapis.com/veryhardware/${img}.jpeg`
+               this.imgUrl = this.getProductImage(img)
           },
+          // check user is login or no before add item to cart
           addToCart() {
                const user = sessionStorage.getItem('user')
                if (this.selectedItem && user) {
                     EventBus.emit('add-to-cart', this.selectedItem)
                }
           },
+          // expend navigation drawer
           toggleDrawer() {
                this.drawer = !this.drawer
           },
@@ -360,9 +384,12 @@ export default {
                this.showList = []
                this.items = []
           },
+          // get products, items, image from api
           async getProducts(){
                try {
-                    window.scrollTo({ top: 0, behavior: "smooth" })
+                    this.$nextTick(() => {
+                         window.scrollTo({ top: 0, behavior: "smooth" });
+                    })
                     const productList = await CallApi.getProductList(1)
                     const itemList = await CallApi.getItemList()
                     const imageList = await CallApi.getImage(0)
@@ -372,11 +399,13 @@ export default {
                          return
                     } 
                     
+
                     this.products = productList.data
                     this.showList = productList.data
                     this.items = itemList.data
                     this.image = imageList.data
 
+                    // if user click the product from home page
                     if (this.id) {
                          const showItem = this.showList.find((item) => item.id == this.id)
                          
@@ -384,10 +413,6 @@ export default {
                               this.showList = [showItem]
                               this.bread = this.getBreadcrumbTrail(showItem)
                               this.navigateToProduct(showItem)
-
-                              this.$nextTick(() => {
-                                   window.scrollTo({ top: 0, behavior: "smooth" });
-                              })
                          }
                     }
                } catch(err) {
@@ -395,77 +420,73 @@ export default {
                }
           },
           navigateToProduct(product) {
-                    if (!this.isDesktop) {
-                         this.falseDrawer()
-                    }
-                    
-                    this.itemTableData = []
-                    this.$nextTick(() => {
-                         window.scrollTo({ top: 0, behavior: "smooth" });
-                    });
+               if (!this.isDesktop) {
+                    this.falseDrawer()
+               }
+               this.searchList = false
+               this.itemTableData = []
+               this.$nextTick(() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" })
+               })
 
-                    // set which item is selected and display in the navigation drawer
-                    this.activeItem = product.id
-                    if (product === 0) {
-                         this.resetProductPage()
-                         return
-                    } 
-                    
-                    // get product describe
-                    if(product.describe) {
-                         this.productDescribe = this.parseProductDescribe(product.describe)
-                    } else {
-                         this.productDescribe = []
-                    }
+               // set which item is selected and display in the navigation drawer
+               this.activeItem = product.id
+               // if user click ALL
+               if (product === 0) {
+                    this.resetProductPage()
+                    return
+               } 
+               
+               // get product describe
+               if(product.describe) {
+                    this.productDescribe = this.parseProductDescribe(JSON.stringify(product.describe))
+               } else {
+                    this.productDescribe = []
+               }
 
-                    // if user select the product and found the item
-                    if (this.searchItem.trim() === '' || !this.searchItem) {
-                         this.loading = true
-                         const item = this.items.filter((item) => item.p_id === product.id)
-                         this.showImageList = this.image
-                         .filter((item) => item.id === product.id)
-                         .map((item) => `${item.image}`)
+               // clear search each naviagtion
+               this.searchItem = ''
+               this.loading = true
 
-                         this.bread = this.getBreadcrumbTrail(product)
-                         if (item.length > 0 ) {
-                              item.forEach(value => {
-                                   let describe;
-                                   if (typeof value.describe === 'string') {
-                                        try {
-                                             describe = JSON.parse(value.describe); // Parse only if it's a valid JSON string
-                                        } catch (err) {
-                                             console.error('Error parsing describe:', err);
-                                             describe = {}; // Fallback to an empty object if parsing fails
-                                        }
-                                   } else {
-                                        describe = value.describe || {}; // Use as-is if it's already an object
-                                   }
-                                   this.itemTableData.push({Image: value.img || value.name, name: value.name, ...describe, price: value.price})
-                              })
-                              this.loading = false
+               // search item from parent 
+               const item = this.items.filter((item) => item.p_id === product.id)
+               this.showImageList = this.image
+               .filter((item) => item.id === product.id)
+               .map((item) => `${item.image}`)
+               
+               // generate bread
+               this.bread = this.getBreadcrumbTrail(product)
+               
+               if (item.length > 0 ) {
+                    // push item detaild to display items
+                    item.forEach(value => {
+                         let describe
+                         try {
+                              describe = typeof value.describe === 'string' ? JSON.parse(value.describe) : value.describe || {}
+                         } catch (err) {
+                              describe = {}
+                         }
+                         this.itemTableData.push({Image: value.img || value.name, name: value.name, ...describe, price: value.price})
+                    })
+                    this.loading = false
+                    return
+               }
+               this.loading = false
+
+               const filteredItems = this.items.filter((item) => item.p_id === product.id)
+
+               this.showList = filteredItems.length > 0 ? filteredItems : product.children || []  
+          },
+          findProductParent(product){
+               // find parent product from dataIterator component
+               this.products.forEach(element => {
+                    element.children.forEach(children => {
+                         if (product.p_id === children.id) {
+                              this.navigateToProduct(children)
                               return
                          }
-                         this.loading = false
-                    } 
-                    // if user search item and click the item
-                    else {
-                         console.log('asdasdasd')
-                         const item = this.items.filter((item) => item.name === product.name)
-                         this.itemDialog = true
-                         this.selectedItem = item[0]
-                         
-                         if (typeof this.selectedItem.describe === 'string') {
-                              this.selectedItem.describe = JSON.parse(this.selectedItem.describe.trim());
-                         }
-
-                         return
-                    }
-
-                    this.bread = this.getBreadcrumbTrail(product)
-
-                    const filteredItems = this.items.filter((item) => item.p_id === product.id)
-
-                    this.showList = filteredItems.length > 0 ? filteredItems : product.children || []  
+                    })
+               })
           },
           getBreadcrumbTrail(product) {
                const trail = []
@@ -473,9 +494,11 @@ export default {
 
                const findParentHierarchy = (currentProduct) => {
                     if (currentProduct) {
+                         // Add the current product's name and a delimiter at the beginning of the trail
                          trail.unshift(currentProduct.name)
                          trail.unshift(' / ')
 
+                         // A helper function to search through a tree of products
                          const findParent = (products, id) => {
                               for (const prod of products) {
                                    if (prod.id === id) {
@@ -492,15 +515,19 @@ export default {
                               return null;
                          };
 
+                         // Find the parent of the current product
                          const parent = findParent(this.products, currentProduct.p_id)
                          if (parent) {
+                              // Recursively process the parent's hierarchy
                               findParentHierarchy(parent)
                          }
                     }
                };
 
+               // Start building the trail from the given product
                findParentHierarchy(product)
 
+               // Always start the breadcrumb trail with 'ALL'
                trail.unshift('ALL')
                return trail
           },
@@ -515,10 +542,12 @@ export default {
 
                const findProductByName = (products, name) => {
                     for (const product of products) {
+                         // if product is parent
                          if (product.name === name) {
                               return product
                          }
 
+                         // if product inside parent
                          if (product.children && product.children.length > 0) {
                               const found = findProductByName(product.children, name)
                               if (found) {
@@ -537,22 +566,24 @@ export default {
                     this.navigateToProduct(targetProduct)
                }
           },
-          getProductImage(productName) {
-               return new URL(`https://storage.googleapis.com/veryhardware/${productName}.jpeg`).href
-          },
           // reset params
           resetProductPage() {
+               this.searchList = false
+               this.searchItem = ''
                this.itemTableData = []
                this.showList = this.products
                this.activeItem = 0
                this.bread = ['ALL']
           },
           handleSearchInput(value) {
-               if (!value) {
+               // reset params if user clear search textfield
+               if (!value || value == '') {
+                    this.searchList = false
                     this.resetProductPage()
                }
           }, 
           searchItems(){
+               // reset params if user search nothing
                if (!this.searchItem || this.searchItem.trim() === '') {
                     this.resetProductPage()
                     return 
@@ -564,6 +595,7 @@ export default {
                const result = this.items.filter((item) =>  
                     item.name.toLowerCase().includes(search)
                )
+
                if (result.length > 0) {
                     this.showList = result
                     this.bread = ['Search Result']
@@ -573,6 +605,9 @@ export default {
                     this.bread = ['No item found']
                     this.activeItem = null
                }
+
+               // display search item component
+               this.searchList = true
           }
      },
      async mounted() {
