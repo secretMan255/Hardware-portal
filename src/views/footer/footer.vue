@@ -29,7 +29,7 @@
                               <p class="subTitle">Email Us: </p>
                          </li>
                          <li  class="mb-2">
-                              <p class="subTitle">company@gmail.com</p>
+                              <p class="subTitle">wingmanhardware@outlook.com</p>
                          </li>
                     </ul>
                </v-col>
