@@ -7,7 +7,8 @@ export default createStore({
     items: [],
     images: [],
     mainProduct: [],
-    isDataFetched: false, // Prevents multiple API calls
+    isProductFetched: false,
+    isMainProductFetched: false,
   },
   mutations: {
     SET_PRODUCTS(state, products) {
@@ -19,8 +20,11 @@ export default createStore({
     SET_IMAGES(state, images) {
       state.images = images;
     },
-    SET_FETCHED(state) {
-      state.isDataFetched = true;
+    SET_PRODUCT_FETCHED(state) {
+      state.isProductFetched = true;
+    },
+    SET_MAIN_PRODUCT_FETCHED(state) {
+      state.isMainProductFetched = true;
     },
     SET_MAINPRODUCTS(state, mainProduct) {
       state.mainProduct = mainProduct;
@@ -28,7 +32,7 @@ export default createStore({
   },
   actions: {
     async fetchProducts({ commit, state }) {
-      if (state.isDataFetched) return; // Skip API call if already fetched
+      if (state.isProductFetched) return; // Skip API call if already fetched
 
       try {
         const productList: any = await CallApi.getProductList(1);
@@ -43,7 +47,7 @@ export default createStore({
           commit("SET_PRODUCTS", productList.data);
           commit("SET_ITEMS", itemList.data);
           commit("SET_IMAGES", imageList.data);
-          commit("SET_FETCHED");
+          commit("SET_PRODUCT_FETCHED");
         }
       } catch (error) {
         commit("SET_PRODUCTS", []);
@@ -53,12 +57,13 @@ export default createStore({
       }
     },
     async fetchHomePage({ commit, state }) {
-      if (state.isDataFetched) return;
+      if (state.isMainProductFetched) return;
       try {
         const getMainProduct: any = await CallApi.getMainProduct();
 
         if (getMainProduct.ret === 0) {
           commit("SET_MAINPRODUCTS", getMainProduct.data);
+          commit("SET_MAIN_PRODUCT_FETCHED");
         }
       } catch (error) {
         commit("SET_MAINPRODUCTS", []);
