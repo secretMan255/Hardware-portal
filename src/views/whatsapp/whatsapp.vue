@@ -1,5 +1,5 @@
 <template>
-     <a href="https:api.whatsapp.com/send?phone=60172223195&text=Hi,anythings i can help u?" target="_blank" rel="noopener noreferrer">
+     <a href="https://wa.me/60172223195" target="_blank" rel="noopener noreferrer">
           <v-icon size="50" icon="mdi-whatsapp" class="whatsapp-position"></v-icon>
      </a>
 </template>
