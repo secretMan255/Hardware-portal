@@ -37,7 +37,8 @@
                <p class="font-weight-bold text-red text-h4">Product Category</p>
                <v-row class="g-5 mb-10">
                     <v-col 
-                         v-for="(product, i) in mainProduct" :key="i"
+                         v-for="(product, i) in vuexMainProducts" 
+                         :key="i"
                          cols="12"
                          sm="6" 
                          md="4" 
@@ -62,7 +63,6 @@
                                         <p class="text-subtitle-2 text-center">{{ product.name }}</p>
                                    </div>
                               </v-sheet>
-                              
                          </v-sheet>
                     </v-col>
                </v-row>
@@ -88,7 +88,7 @@ export default {
           }
      },
      computed: {
-          ...mapState({vuexMainProducts: 'mainProduct' }),
+          ...mapState({ vuexMainProducts: 'mainProduct' }),
           carouselHeight() {
                return this.windowWidth < 768 ? '300px' : '600px'
           }
@@ -99,7 +99,7 @@ export default {
           async getMainProduct(){
                window.scrollTo({ top: 0, behavior: "smooth" })
                
-               this.mainProduct = this.vuexMainProducts
+               // this.mainProduct = this.vuexMainProducts
           },
           updateWindowWidth() {
                this.windowWidth = window.innerWidth;
