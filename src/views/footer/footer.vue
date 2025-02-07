@@ -23,7 +23,7 @@
                               <p class="subTitle">WhatsApp: </p>
                          </li>
                          <li class="mb-2">
-                              <a class="hrefText" href="https://wa.me/60172223915">+60 17 2223 195</a>
+                              <a class="hrefText" href="https://wa.me/60172223195">+60 17 2223 195</a>
                          </li>
                          <li>
                               <p class="subTitle">Email Us: </p>
