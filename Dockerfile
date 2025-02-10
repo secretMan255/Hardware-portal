@@ -1,20 +1,18 @@
-# Step 1: Use a Node.js image to build the project
-FROM node:16-alpine as builder
-WORKDIR /usr/src/app
-
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
-
-# Build the project
-COPY . .
-RUN npm run build
-
-# Step 2: Use a lightweight web server to serve the build
+# Step 1: Use a lightweight web server to serve the pre-built files
 FROM nginx:stable-alpine
 
-# Copy the build application from the previous state to the Nginx container
-COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+# Copy the pre-built files to the Nginx container
+COPY dist /usr/share/nginx/html
 
-EXPOSE 80
+# Copy the custom Nginx configuration file
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Validate the Nginx configuration to catch errors early
+RUN nginx -t
+
+# Expose the port for serving the application
+EXPOSE 8080
+
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
+
