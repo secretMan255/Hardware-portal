@@ -415,6 +415,9 @@ export default {
                     window.scrollTo({ top: 0, behavior: "smooth" })
                })
 
+               // reset pagination 
+               this.page = 1
+
                // set which item is selected and display in the navigation drawer
                this.activeItem = product.id
                // if user click ALL
