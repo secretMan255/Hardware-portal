@@ -109,20 +109,6 @@ export function priceDecimal(price: number, currency?: string) {
   );
 }
 
-export function parseProductDescribe(raw: any) {
-  const cleaned = raw.replace(/^\{|\}$/g, "").replace(/\\/g, "");
-
-  const splitValues = cleaned.split(",").map((value: any) =>
-    value
-      .trim() // Trim spaces
-      .replace(/^"|"$/g, "")
-      .replace(/^\{|\}$/g, "")
-      .replace('"', "")
-  );
-
-  return splitValues;
-}
-
 export function getProductImage(productName: string) {
   return new URL(
     `https://storage.googleapis.com/veryhardware/${productName}.jpeg`

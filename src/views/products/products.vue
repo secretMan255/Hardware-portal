@@ -427,9 +427,7 @@ export default {
                } 
                
                // get product describe
-               this.productDescribe = product.describe
-               ? this.parseProductDescribe(JSON.stringify(product.describe))
-               : []
+               this.productDescribe = JSON.parse(product.describe)
 
                // clear search each naviagtion
                this.searchItem = ''
