@@ -295,7 +295,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import Footer from '../footer/footer.vue'
-import { EventBus, priceDecimal, parseProductDescribe, getProductImage } from '../../utils/utils';
+import { EventBus, priceDecimal, getProductImage } from '../../utils/utils';
 import ImageAmplifier from '../imageAmplifier/imageAmplifier.vue'
 import DataIterator from '../dataIterator/dataIterator.vue';
 
@@ -354,7 +354,6 @@ export default {
           ...mapActions(['fetchProducts']),
           getProductImage,
           priceDecimal,
-          parseProductDescribe,
           openImageDialog(img) {
                this.ImageAmpDialog = true
                this.imgUrl = this.getProductImage(img)
@@ -425,7 +424,7 @@ export default {
                     this.resetProductPage()
                     return
                } 
-               
+
                // get product describe
                this.productDescribe = JSON.parse(product.describe)
 
