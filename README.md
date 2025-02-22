@@ -2,7 +2,7 @@
 
 This is a landing page built with Node.js and Vuetify that uses Axios to fetch data from the [backend](https://github.com/secretMan255/Rest-API-and-Mysql-Service).
 
-# Setup Instructions?
+# Setup Instructions
 
 Set environment variable
 
