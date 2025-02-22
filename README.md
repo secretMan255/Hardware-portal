@@ -1,27 +1,33 @@
 # Introduce
+
 This is a landing page made by node.js, vuetify that using axios to fetch data from the [backend](https://github.com/secretMan255/Rest-API-and-Mysql-Service).
 
-
 # How to setup?
-Set enviroment variable
-> VITE_API_BASE_URL -> API endpoint
-> VITE_BEREAR_TOKEN -> Token
-> VITE_GOOGLE_CLIENT_ID -> Google client id for initial google login
-> VITE_SITE_KEY -> Google reCAPTCHA site key (not using now, load loadRecaptcha if u want to use)
-> VITE_MAP_KEY -> Google map api key
 
-Install package 
+Set enviroment variable
+
+-    VITE_API_BASE_URL -> API endpoint
+-    VITE_BEREAR_TOKEN -> Token
+-    VITE_GOOGLE_CLIENT_ID -> Google client id for initial google login
+-    VITE_SITE_KEY -> Google reCAPTCHA site key (not using now, load loadRecaptcha if u want to use)
+-    VITE_MAP_KEY -> Google map api key
+
+Install package
+
 ```
-npm run dev
+npm run i
 ```
 
 Start project
+
 ```
 npm run dev
 ```
 
 # Deploy
+
 Create nginx folder in root path and touch default.conf to configue nginx (already provided)
+
 ```
 server {
     listen 8080;
@@ -42,12 +48,14 @@ server {
 }
 ```
 
-Build dict 
+Build dict
+
 ```
 npm run build
 ```
 
 Create a Dockerfile in root path (already provided)
+
 ```
 # Step 1: Use a lightweight web server to serve the pre-built files
 FROM nginx:stable-alpine
@@ -69,21 +77,26 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 Build image
+
 ```
 docker build -t image-name .
 ```
 
 If u want to push to dockerhub
+
 ```
 docker push tagname/image-name
 ```
 
-Create script (googleDeploy.sh) at root path if u want to deploy on google cloud run 
+Create script (googleDeploy.sh) at root path if u want to deploy on google cloud run
 Start Deploy
+
 ```
 ./googleDeploy.sh
 ```
+
 Script
+
 ```
 # Define environment variables
 GOOGLE_PROJECT_ID=""
@@ -104,4 +117,3 @@ gcloud run deploy $CLOUD_RUN_SERVICE \
      --timeout=500s \
      --project=$GOOGLE_PROJECT_ID
 ```
-
