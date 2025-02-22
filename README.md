@@ -1,32 +1,32 @@
 # Introduce
 
-This is a landing page made by node.js, vuetify that using axios to fetch data from the [backend](https://github.com/secretMan255/Rest-API-and-Mysql-Service).
+This is a landing page built with Node.js and Vuetify that uses Axios to fetch data from the [backend](https://github.com/secretMan255/Rest-API-and-Mysql-Service).
 
-# How to setup?
+# Setup Instructions?
 
-Set enviroment variable
+Set environment variable
 
 -    VITE_API_BASE_URL -> API endpoint
 -    VITE_BEREAR_TOKEN -> Token
--    VITE_GOOGLE_CLIENT_ID -> Google client id for initial google login
+-    VITE_GOOGLE_CLIENT_ID -> Google Client ID for initial Google login
 -    VITE_SITE_KEY -> Google reCAPTCHA site key (not using now, load loadRecaptcha if u want to use)
--    VITE_MAP_KEY -> Google map api key
+-    VITE_MAP_KEY -> Google maps API key
 
-Install package
+Install Dependencies
 
 ```
-npm run i
+npm i
 ```
 
-Start project
+Start the Project
 
 ```
 npm run dev
 ```
 
-# Deploy
+# Deployment
 
-Create nginx folder in root path and touch default.conf to configue nginx (already provided)
+Create nginx folder in root path and add a default.conf to configure nginx (already provided)
 
 ```
 server {
@@ -48,7 +48,7 @@ server {
 }
 ```
 
-Build dict
+Build the Project
 
 ```
 npm run build
@@ -82,7 +82,7 @@ Build image
 docker build -t image-name .
 ```
 
-If u want to push to dockerhub
+Push the Image to Docker Hub (Optional)
 
 ```
 docker push tagname/image-name
