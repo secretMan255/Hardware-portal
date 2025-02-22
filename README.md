@@ -109,7 +109,7 @@ VITE_MAP_KEY=""
 
 # Step 2: Deploy to Cloud Run
 gcloud run deploy $CLOUD_RUN_SERVICE \
-     --image=docker.io/yapyiliang2001/wingman-hardware-portal:latest \
+     --image=
      --update-env-vars=VITE_API_BASE_URL=$VITE_API_BASE_URL,VITE_BEREAR_TOKEN=$VITE_BEREAR_TOKEN,VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID,VITE_SITE_KEY=$VITE_SITE_KEY,VITE_MAP_KEY=$VITE_MAP_KEY \
      --platform=managed \
      --region=asia-southeast1 \
